@@ -1,0 +1,190 @@
+@precedence {
+	else @right,
+	member,
+	call,
+	prefix,
+	exp @left,
+	times @left,
+	plus @left,
+	rel @left,
+	equal @left,
+	bitAnd @left,
+	bitXor @left,
+	bitOr @left,
+	ternary @right,
+	assign @right,
+	comma @left,
+	statement @cut
+}
+
+@top Script { statement (";" statement)* }
+
+statement[@isGroup=Statement] {
+	IfStatement { kw<"if"> expression !else kw<"then"> statement (kw<"else"> statement)? kw<"end"> } |
+	ExpressionStatement { expression }
+}
+
+expression[@isGroup=Expression] {
+	Number |
+	String |
+	VariableName |
+	boolean |
+	kw<"null"> |
+	ArrayExpression |
+	UnaryExpression |
+	ParenthesizedExpression |
+	MemberExpression |
+	BinaryExpression |
+	ConditionalExpression { expression !ternary questionOp expression LogicOp<":"> expression } |
+	AssignmentExpression |
+	CallExpression { callee !call ArgList }
+}
+
+ParenthesizedExpression { "(" expression ")" }
+
+ArrayExpression {
+  "[" commaSep<expression | ""> "]"
+}
+
+UnaryExpression {
+	!prefix (LogicOp<"!"> | plusMin)
+	expression
+}
+
+BinaryExpression {
+	expression !exp ArithOp<"**"> expression |
+	expression !times (divide | ArithOp<"%"> | ArithOp<"*">) expression |
+	expression !plus plusMin expression |
+	expression !rel CompareOp<"<" "="? | ">" "="?> expression |
+	expression !rel (kw<"in"> | kw<"like"> | kw<"matches"> | kw<"contains"> | kw<"rlike"> | kw<"regex"> | kw<"irlike">) expression |
+	expression !equal CompareOp<"=" "="? "="? | "!=" "="?> expression |
+	expression !bitOr BitOp { "|" } expression |
+	expression !bitXor BitOp<"^"> expression |
+	expression !bitAnd BitOp { "&" } expression
+}
+
+AssignmentExpression {
+	(VariableName | MemberExpression) !assign ":=" expression
+}
+
+MemberExpression {
+	expression !member "[" expression? "]"
+}
+
+ArgList {
+	"(" commaSep<expression> ")"
+}
+
+@skip {} {
+	String[isolate] {
+		'"' (stringContentDouble | escape)* ('"' | "\n") |
+		"'" (stringContentSingle | escape)* ("'" | "\n")
+	}
+
+	BlockComment[isolate] { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
+}
+
+commaSep<content> {
+	"" | content ("," content?)*
+}
+
+// Keywords
+
+kw<term> { @specialize[@name={term}]<identifier, term> }
+
+boolean { @specialize[@name=BooleanLiteral]<identifier, "true" | "false"> }
+
+VariableName { identifier }
+
+questionOp[@name=LogicOp] { "?" }
+
+plusMin { ArithOp<"+" | "-"> }
+
+callee {
+	kw<"lcase"> |
+	kw<"ucase"> |
+	kw<"length"> |
+	kw<"string"> |
+	kw<"int"> |
+	kw<"float"> |
+	kw<"bool"> |
+	kw<"norm"> |
+	kw<"ccnorm"> |
+	kw<"ccnorm_contains_any"> |
+	kw<"ccnorm_contains_all"> |
+	kw<"specialratio"> |
+	kw<"rmspecials"> |
+	kw<"rmdoubles"> |
+	kw<"rmwhitespace"> |
+	kw<"count"> |
+	kw<"rcount"> |
+	kw<"get_matches"> |
+	kw<"ip_in_range"> |
+	kw<"ip_in_ranges"> |
+	kw<"contains_any"> |
+	kw<"contains_all"> |
+	kw<"equals_to_any"> |
+	kw<"substr"> |
+	kw<"strlen"> |
+	kw<"strpos"> |
+	kw<"str_replace"> |
+	kw<"str_replace_regexp"> |
+	kw<"rescape"> |
+	kw<"set"> |
+	kw<"set_var"> |
+	identifier
+}
+
+@skip { spaces | newline | BlockComment }
+
+@local tokens {
+	blockCommentEnd { "*/" }
+	blockCommentNewline { "\n" }
+	@else blockCommentContent
+}
+
+@tokens {
+	spaces { $[\u0009\u000b\u000c ]+ }
+	newline { $[\r\n] }
+
+	divide[@name=ArithOp] { "/" }
+
+	@precedence { "/*", divide }
+
+	identifierChar { @asciiLetter | $[_$\u{a1}-\u{10ffff}] }
+
+	word { identifierChar (identifierChar | @digit)* }
+
+	identifier { word }
+
+	@precedence { spaces, newline, identifier }
+
+	hex { @digit | $[a-fA-F] }
+
+	Number {
+		@digit+ ("." @digit*)? |
+		"." @digit+ |
+		"0x" hex+ |
+		"0b" $[01]+ |
+		"0o" $[0-7]+
+	}
+
+	escape {
+		"\\" ![\n]
+	}
+
+	stringContentSingle { ![\\\n']+ }
+
+	stringContentDouble { ![\\\n"]+ }
+
+	ArithOp<expr> { expr }
+	LogicOp<expr> { expr }
+	BitOp<expr> { expr }
+	CompareOp<expr> { expr }
+
+	":="[@name=Equals]
+
+	"(" ")" "[" "]"
+
+	"," ";"
+}
