@@ -1,23 +1,25 @@
 import {LRLanguage, LanguageSupport} from '@codemirror/language';
 import {styleTags, tags} from '@lezer/highlight';
-import {parser} from '../src/parser';
+import {parser} from './parser.js';
+import {data} from './tokens.js';
+import type {Dialect} from './tokens';
 
 export const abusefilterLanguage = LRLanguage.define({
 	name: 'abusefilter',
 	parser: parser.configure({
 		props: [
 			styleTags({
-				'else end if then': tags.controlKeyword,
-				'in like matches contains rlike regex irlike': tags.operatorKeyword,
-
-				/**
-				 * @todo Define dialects with a list of keywords
-				 * @see https://github.com/codemirror/lang-sql/blob/main/src/sql.ts#L93
-				 */
-				// eslint-disable-next-line @stylistic/max-len
-				'lcase ucase length string int float bool norm ccnorm ccnorm_contains_any ccnorm_contains_all specialratio rmspecials rmdoubles rmwhitespace count rcount get_matches ip_in_range ip_in_ranges contains_any contains_all equals_to_any substr strlen strpos str_replace str_replace_regexp rescape set set_var': tags.definition(tags.variableName),
-				BooleanLiteral: tags.bool,
+				String: tags.string,
+				Comment: tags.comment,
+				Bool: tags.bool,
 				null: tags.null,
+				'else end if then': tags.controlKeyword,
+				Rel: tags.operatorKeyword,
+				Callee: tags.invalid,
+				Func: tags.definition(tags.variableName),
+				GlobalVar: tags.local(tags.variableName),
+				DeprecatedVar: [tags.local(tags.variableName), tags.strikethrough],
+				DisabledVar: tags.invalid,
 				'; ,': tags.separator,
 				'( )': tags.paren,
 				'[ ]': tags.squareBracket,
@@ -26,9 +28,7 @@ export const abusefilterLanguage = LRLanguage.define({
 				BitOp: tags.logicOperator,
 				LogicOp: tags.logicOperator,
 				Equals: tags.updateOperator,
-				BlockComment: tags.comment,
 				Number: tags.number,
-				String: tags.string,
 			}),
 		],
 	}),
@@ -39,4 +39,9 @@ export const abusefilterLanguage = LRLanguage.define({
 	},
 });
 
-export const abusefilter = (): LanguageSupport => new LanguageSupport(abusefilterLanguage);
+export const abusefilter = (dialect?: Dialect): LanguageSupport => {
+	if (dialect) {
+		Object.assign(data, dialect);
+	}
+	return new LanguageSupport(abusefilterLanguage);
+};

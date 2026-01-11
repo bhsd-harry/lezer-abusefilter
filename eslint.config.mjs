@@ -3,10 +3,7 @@ import esX from 'eslint-plugin-es-x';
 
 export default [
 	{
-		ignores: [
-			'src/parser.js',
-			'gh-page.js',
-		],
+		ignores: ['**/*.js'],
 	},
 	...config,
 	browser,
