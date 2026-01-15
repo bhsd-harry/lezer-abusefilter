@@ -30,7 +30,7 @@ const toObj = (code: string, {name, from, to, firstChild}: SyntaxNode): ObjNode 
 					while (nextSibling && nextSibling.name === 'Comment') {
 						({nextSibling} = nextSibling);
 					}
-					let nextChild: SyntaxNode | null = child.firstChild!,
+					let nextChild: SyntaxNode | null = child.firstChild,
 						first = true;
 					while (nextChild && (first || nextChild.name === 'Comment')) {
 						if (nextChild.name !== 'Comment') {

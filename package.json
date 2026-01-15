@@ -32,7 +32,8 @@
 		"build:test": "rm -rf test/dist/; tsc --project test/tsconfig.json && npm test",
 		"build": "npm run build:parser && npm run build:core",
 		"lint:ts": "tsc --noEmit && eslint --cache .",
-		"lint": "npm run lint:ts",
+		"lint:md": "markdownlint-cli2 '**/*.md'",
+		"lint": "npm run lint:ts && npm run lint:md",
 		"server": "npm run test:end; http-server .. -c-1 --cors -s &",
 		"test": "mocha",
 		"test:end": "pkill -x http-server"
@@ -60,6 +61,7 @@
 		"eslint-plugin-regexp": "^2.10.0",
 		"eslint-plugin-unicorn": "^62.0.0",
 		"http-server": "^14.1.1",
+		"markdownlint-cli2": "^0.19.0",
 		"mocha": "^11.7.5",
 		"typescript": "^5.9.3"
 	}
