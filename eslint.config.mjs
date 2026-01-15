@@ -7,5 +7,16 @@ export default [
 	},
 	...config,
 	browser,
-	esX.configs['flat/restrict-to-es2017'],
+	{
+		files: ['src/*.ts'],
+		...esX.configs['flat/restrict-to-es2017'],
+	},
+	{
+		files: ['test/**/*.ts'],
+		languageOptions: {
+			parserOptions: {
+				project: './test/tsconfig.json',
+			},
+		},
+	},
 ];

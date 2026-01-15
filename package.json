@@ -13,6 +13,7 @@
 	"license": "GPL-3.0",
 	"files": [
 		"dist/",
+		"!dist/*.test.*",
 		"!dist/gh-page.*"
 	],
 	"browser": "dist/index.js",
@@ -28,10 +29,12 @@
 		"build:parser": "lezer-generator src/abusefilter.grammar -o src/parser.js",
 		"build:core": "tsc && cp src/parser.*js dist/",
 		"build:gh-page": "esbuild src/gh-page.ts --charset=utf8 --target=es2019 --bundle --format=esm --minify --outdir=.",
+		"build:test": "rm -rf test/dist/; tsc --project test/tsconfig.json && npm test",
 		"build": "npm run build:parser && npm run build:core",
 		"lint:ts": "tsc --noEmit && eslint --cache .",
 		"lint": "npm run lint:ts",
 		"server": "npm run test:end; http-server .. -c-1 --cors -s &",
+		"test": "mocha",
 		"test:end": "pkill -x http-server"
 	},
 	"dependencies": {
@@ -45,6 +48,7 @@
 		"@codemirror/view": "^6.38.8",
 		"@lezer/generator": "^1.8.0",
 		"@stylistic/eslint-plugin": "^5.5.0",
+		"@types/mocha": "^10.0.10",
 		"@typescript-eslint/eslint-plugin": "^8.46.4",
 		"@typescript-eslint/parser": "^8.46.4",
 		"eslint": "^9.39.1",
@@ -56,6 +60,7 @@
 		"eslint-plugin-regexp": "^2.10.0",
 		"eslint-plugin-unicorn": "^62.0.0",
 		"http-server": "^14.1.1",
+		"mocha": "^11.7.5",
 		"typescript": "^5.9.3"
 	}
 }

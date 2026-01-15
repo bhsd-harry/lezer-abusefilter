@@ -56,7 +56,8 @@ const eat = (input: InputStream, predicate: (code: number) => boolean): string =
 };
 
 // 16-, 8-, 2-base integers and decimal numbers
-const reNum = /^(?:0x[\dA-Fa-f]+|0o[0-7]+|0b[01]+|\d+(?:\.\d*)?|\.\d+)$/u;
+const reNum = /^(?:0x[\dA-Fa-f]+|0o[0-7]+|0b[01]+|\d+(?:\.\d*)?|\.\d+)$/u,
+	keywords = new Set(['true', 'false', 'null', 'if']);
 
 export const tokens = new ExternalTokenizer(input => {
 	let word = eat(input, isAlphaNum);
@@ -66,7 +67,9 @@ export const tokens = new ExternalTokenizer(input => {
 		input.advance();
 		word += eat(input, isNum);
 	}
-	if (reNum.test(word)) {
+	if (keywords.has(word)) {
+		//
+	} else if (reNum.test(word)) {
 		input.acceptToken(Num);
 	} else if (!hasDot && word) {
 		// variable name may start with digit

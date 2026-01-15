@@ -14,7 +14,7 @@
 }
 
 // expression must be delimited by ";" or EOF
-@top Script { expression? (";" expression?)* }
+@top Script { statement }
 
 @skip {} {
 	// String may contain newlines
@@ -34,6 +34,8 @@
 
 @skip { spaces | newline | Comment }
 
+statement { expression? (";" expression?)* }
+
 expression[@isGroup=Expression] {
 	// Simple expressions
 	String |
@@ -49,7 +51,7 @@ expression[@isGroup=Expression] {
 
 	// Complex expressions
 	ArrayExpression { "[" commaSep "]" } |
-	ParenthesizedExpression { "(" expression ")" } |
+	ParenthesizedExpression { "(" statement ")" } |
 	UnaryExpression |
 	MemberExpression |
 	BinaryExpression |
@@ -86,7 +88,7 @@ BinaryExpression {
 
 relation { @specialize[@name=Rel]<identifier, "in" | "like" | "matches" | "contains" | "rlike" | "regex" | "irlike"> }
 
-@external tokens tokens from './tokens' {
+@external tokens tokens from './tokens.js' {
 	Callee,
 	Func,
 	VarName,
