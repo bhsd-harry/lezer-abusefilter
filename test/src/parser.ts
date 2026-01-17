@@ -30,22 +30,16 @@ const toObj = (code: string, {name, from, to, firstChild}: SyntaxNode): ObjNode 
 					while (nextSibling && nextSibling.name === 'Comment') {
 						({nextSibling} = nextSibling);
 					}
-					let nextChild: SyntaxNode | null = child.firstChild,
-						first = true;
-					while (nextChild && (first || nextChild.name === 'Comment')) {
-						if (nextChild.name !== 'Comment') {
-							first = false;
-						}
-						nextChild = nextChild.nextSibling;
-					}
-					if (
-						nextSibling?.name === 'BitOp' && nextChild!.name === 'BitOp'
-						|| nextSibling?.name === 'ArithOp' && nextChild!.name === 'ArithOp'
-					) {
+					const type = nextSibling?.name;
+					if ((type === 'BitOp' || type === 'ArithOp') && child.getChild(type)) {
 						node.children!.push(...childNode.children!);
 						child = child.nextSibling;
 						continue;
 					}
+				} else if (child.name === 'ArgList') {
+					node.children!.push(...childNode.children!);
+					child = child.nextSibling;
+					continue;
 				}
 				node.children!.push(childNode);
 			}

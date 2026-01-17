@@ -1,3 +1,11 @@
 {
-	"no-emphasis-as-heading": false
+	"ul-indent": {
+		"indent": 1
+	},
+	"no-hard-tabs": false,
+	"line-length": false,
+	"no-emphasis-as-heading": false,
+	"first-line-h1": {
+		"allow_preamble": true
+	}
 }

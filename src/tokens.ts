@@ -11,17 +11,17 @@ import {
 import type {InputStream} from '@lezer/lr';
 
 export interface Dialect {
-	functions?: Set<string>;
-	variables?: Set<string>;
-	deprecated?: Set<string>;
-	disabled?: Set<string>;
+	functions?: string[];
+	variables?: string[];
+	deprecated?: string[];
+	disabled?: string[];
 }
 
 export const data: Required<Dialect> = {
-	functions: new Set(),
-	variables: new Set(),
-	deprecated: new Set(),
-	disabled: new Set(),
+	functions: [],
+	variables: [],
+	deprecated: [],
+	disabled: [],
 };
 
 const ch = {
@@ -80,13 +80,13 @@ export const tokens = new ExternalTokenizer(input => {
 		}
 		// There may be spaces between function name and "("
 		if (input.next === ch.LPar) {
-			input.acceptToken(data.functions.has(word) ? Func : Callee, offset);
-		} else if (data.disabled.has(word)) {
+			input.acceptToken(data.functions.includes(word) ? Func : Callee, offset);
+		} else if (data.disabled.includes(word)) {
 			input.acceptToken(DisabledVar, offset);
-		} else if (data.deprecated.has(word)) {
+		} else if (data.deprecated.includes(word)) {
 			input.acceptToken(DeprecatedVar, offset);
 		} else {
-			input.acceptToken(data.variables.has(word) ? GlobalVar : VarName, offset);
+			input.acceptToken(data.variables.includes(word) ? GlobalVar : VarName, offset);
 		}
 	}
 });

@@ -60,7 +60,7 @@ expression[@isGroup=Expression] {
 	AssignmentExpression { (VarName | MemberExpression) !assign ":=" expression } |
 
 	// external token
-	CallExpression { (Func | Callee) !call "(" commaSep ")" }
+	CallExpression { (Func | Callee) !call ArgList }
 }
 
 kw<term> { @specialize[@name={term}]<identifier, term> }
@@ -87,6 +87,8 @@ BinaryExpression {
 }
 
 relation { @specialize[@name=Rel]<identifier, "in" | "like" | "matches" | "contains" | "rlike" | "regex" | "irlike"> }
+
+ArgList { "(" commaSep ")" }
 
 @external tokens tokens from './tokens.js' {
 	Callee,
@@ -123,3 +125,5 @@ relation { @specialize[@name=Rel]<identifier, "in" | "like" | "matches" | "conta
 
 	"(" ")" "[" "]" "," ";"
 }
+
+@detectDelim

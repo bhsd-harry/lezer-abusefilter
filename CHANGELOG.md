@@ -1,6 +1,6 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 0.0.0
 
-*2026-01-16*
+*2026-01-18*
 
 - Initial release

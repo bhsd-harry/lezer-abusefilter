@@ -1,7 +1,14 @@
 import {EditorView, lineNumbers, highlightActiveLineGutter, keymap} from '@codemirror/view';
-import {syntaxHighlighting, defaultHighlightStyle, syntaxTree} from '@codemirror/language';
+import {
+	syntaxHighlighting,
+	defaultHighlightStyle,
+	syntaxTree,
+	bracketMatching,
+	foldGutter,
+	indentOnInput,
+} from '@codemirror/language';
 import {defaultKeymap, history as historyExtension, historyKeymap, indentWithTab} from '@codemirror/commands';
-// import {autocompletion} from '@codemirror/autocomplete';
+import {closeBrackets, autocompletion, acceptCompletion} from '@codemirror/autocomplete';
 import {searchKeymap} from '@codemirror/search';
 import {abusefilter} from './index';
 import dialect from './dialect.test';
@@ -10,7 +17,11 @@ const container = document.getElementById('wpTextbox')!,
 	extensions = [
 		abusefilter(dialect),
 		syntaxHighlighting(defaultHighlightStyle),
-		// autocompletion(),
+		bracketMatching({brackets: '()[]'}),
+		closeBrackets(),
+		autocompletion(),
+		foldGutter(),
+		indentOnInput(),
 		EditorView.lineWrapping,
 		lineNumbers(),
 		highlightActiveLineGutter(),
@@ -18,6 +29,7 @@ const container = document.getElementById('wpTextbox')!,
 			...defaultKeymap,
 			...searchKeymap,
 			...historyKeymap,
+			{key: 'Tab', run: acceptCompletion},
 			indentWithTab,
 		]),
 		historyExtension(),

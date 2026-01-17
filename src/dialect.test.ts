@@ -1,7 +1,7 @@
 import type {Dialect} from './tokens';
 
 export default {
-	functions: new Set([
+	functions: [
 		'lcase',
 		'ucase',
 		'length',
@@ -34,8 +34,8 @@ export default {
 		'set',
 		'set_var',
 		'sanitize',
-	]),
-	deprecated: new Set([
+	],
+	deprecated: [
 		'article_text',
 		'article_prefixedtext',
 		'article_namespace',
@@ -56,13 +56,13 @@ export default {
 		'board_articleid',
 		'board_text',
 		'board_prefixedtext',
-	]),
-	disabled: new Set([
+	],
+	disabled: [
 		'old_text',
 		'old_html',
 		'minor_edit',
-	]),
-	variables: new Set([
+	],
+	variables: [
 		'timestamp',
 		'accountname',
 		'action',
@@ -160,5 +160,5 @@ export default {
 		'ip_reputation_client_behaviors',
 		'ip_reputation_client_count',
 		'ip_reputation_ipoid_known',
-	]),
+	],
 } satisfies Dialect;
