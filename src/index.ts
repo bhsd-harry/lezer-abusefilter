@@ -105,6 +105,14 @@ export const abusefilterLanguage = LRLanguage.define({
 			before: ')];',
 		},
 		indentOnInput: /^\s*(?:[)\]]|then|else|end)$/u,
+	},
+});
+
+export const abusefilter = (dialect?: Dialect): LanguageSupport => {
+	if (dialect) {
+		Object.assign(data, dialect);
+	}
+	return new LanguageSupport(abusefilterLanguage, abusefilterLanguage.data.of({
 		autocomplete({state, pos}: CompletionContext): CompletionResult | null {
 			const tree = syntaxTree(state),
 				inner = tree.resolveInner(pos, -1);
@@ -160,12 +168,5 @@ export const abusefilterLanguage = LRLanguage.define({
 					return null;
 			}
 		},
-	},
-});
-
-export const abusefilter = (dialect?: Dialect): LanguageSupport => {
-	if (dialect) {
-		Object.assign(data, dialect);
-	}
-	return new LanguageSupport(abusefilterLanguage);
+	}));
 };
