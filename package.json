@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/lezer-abusefilter",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Lezer parser for MediaWiki extension AbuseFilter",
 	"keywords": [
 		"mediawiki",
