@@ -39,16 +39,14 @@ const numberBases = new Map<string, number>([
 
 /** List of relation keywords. */
 export const relationKeywords = ['in', 'like', 'contains', 'matches', 'rlike', 'irlike', 'regex'],
-	valueKeywords = new Set(['true', 'false', 'null']);
+	valueKeywords = new Set(['true', 'false', 'null']),
+	conditionKeywords = new Set(['if', 'then', 'else', 'end']);
 
 /** Set of keywords recognized by the tokenizer. */
 const keywords = new Set([
 	...relationKeywords,
 	...valueKeywords,
-	'if',
-	'then',
-	'else',
-	'end',
+	...conditionKeywords,
 ]);
 
 /**
@@ -80,12 +78,10 @@ export class Tokenizer {
 		// Its position will make our parser start at the beginning of the input.
 		// The actual type is not important here, as the parser will replace it immediately.
 		let token = {end: 0} as Token;
-
 		do {
 			token = this.getNextToken(token.end);
 			tokens.push(token);
 		} while (!token.is(TokenType.EndOfStream));
-
 		return tokens;
 	}
 
@@ -170,11 +166,12 @@ export class Tokenizer {
 		identifierRegex.lastIndex = offset;
 		const identifierMatch = identifierRegex.exec(input);
 		if (identifierMatch) {
-			const [identifier] = identifierMatch;
-
+			let [identifier] = identifierMatch;
 			const isKeyword = keywords.has(identifier);
 			const tokenType = isKeyword ? TokenType.Keyword : TokenType.Identifier;
-
+			if (!isKeyword) {
+				identifier = identifier.toLowerCase();
+			}
 			return new Token(tokenType, identifier, offset);
 		}
 
@@ -193,7 +190,6 @@ export class Tokenizer {
 
 		// Stores the parsed string content, i.e. `\n` will be stored as a newline character etc.
 		let stringContent = '';
-
 		let offset = startOffset + 1;
 		while (offset < l) {
 			const char = input[offset]!;
@@ -238,7 +234,6 @@ export class Tokenizer {
 							}
 							stringContent += String.raw`\x`;
 							break;
-
 						default:
 							stringContent += `\\${nextChar}`;
 							break;
@@ -257,7 +252,6 @@ export class Tokenizer {
 				if (nextQuote !== -1) {
 					chunkEnd = Math.min(chunkEnd, nextQuote);
 				}
-
 				const chunk = input.substring(offset, chunkEnd);
 				stringContent += chunk;
 				offset = chunkEnd;

@@ -9,13 +9,7 @@ import {
 	Num,
 } from './parser.terms.js';
 import type {InputStream} from '@lezer/lr';
-
-export interface Dialect {
-	functions?: string[];
-	variables?: string[];
-	deprecated?: string[];
-	disabled?: string[];
-}
+import type {Dialect} from '../analyzer/analyzer';
 
 export const data: Required<Dialect> = {
 	functions: [],

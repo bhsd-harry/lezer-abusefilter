@@ -39,7 +39,7 @@ import {abusefilterLanguage} from '@bhsd/lezer-abusefilter';
 
 # Lint Source
 
-This package also provides a [lint source](https://codemirror.net/docs/ref/#lint.LintSource) for MediaWiki AbuseFilter syntax checking.
+This package also provides a [lint source](https://codemirror.net/docs/ref/#lint.LintSource) adapted from [AbuseFilter analyzer](https://meta.wikimedia.org/wiki/User:Msz2001/AbuseFilter_analyzer) for syntax checking.
 
 ```ts
 import {analyzer} from '@bhsd/lezer-abusefilter';

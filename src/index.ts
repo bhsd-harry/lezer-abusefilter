@@ -14,10 +14,9 @@ import {data, startKeywords} from './tokens.js';
 import analyze from '../analyzer/analyzer.js';
 import type {Text} from '@codemirror/state'; // eslint-disable-line @typescript-eslint/no-shadow
 import type {CompletionContext, CompletionResult, Completion} from '@codemirror/autocomplete';
-import type {LintSource} from '@codemirror/lint';
+import type {LintSource, Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
-import type {Dialect} from './tokens';
-import type {ParserException} from '../analyzer/analyzer';
+import type {Dialect, ParserException} from '../analyzer/analyzer';
 
 export type {Dialect};
 
@@ -174,23 +173,22 @@ export const abusefilter = (dialect?: Dialect): LanguageSupport => {
 	}));
 };
 
-export const analyzer: LintSource = view => {
+export const analyzer: LintSource = ({state: {doc}}) => {
 	try {
-		analyze(view.state.doc.toString());
+		analyze(doc.toString(), data);
 	} catch (e) {
-		const {message, from, to = from} = e as ParserException;
-		if (from === undefined) { // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+		const {from: f, warnings = []} = e as ParserException;
+		if (f === undefined) { // eslint-disable-line @typescript-eslint/no-unnecessary-condition
 			throw e;
 		}
-		return [
-			{
+		return [...warnings, e as ParserException]
+			.map(({from, to = from, message, severity = 'error'}): Diagnostic => ({
 				from,
 				to,
-				severity: 'error',
+				severity,
 				source: 'AbuseFilter analyzer',
 				message,
-			},
-		];
+			}));
 	}
 	return [];
 };

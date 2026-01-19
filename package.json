@@ -15,7 +15,8 @@
 		"dist/",
 		"!dist/*.test.*",
 		"!dist/gh-page.*",
-		"analyzer/analyzer.*"
+		"analyzer/analyzer.*",
+		"analyzer/ThirdPartyNotices"
 	],
 	"browser": "dist/index.js",
 	"main": "./dist/index.js",

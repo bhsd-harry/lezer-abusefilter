@@ -1,13 +1,17 @@
 import {ParserException} from './ParserException.js';
 import {TokenType} from './TokenType.js';
-import {relationKeywords, valueKeywords} from './Tokenizer.js';
-import type {Token} from './Token.js';
+import {relationKeywords, valueKeywords, conditionKeywords} from './Tokenizer.js';
+import type {Token} from './Token';
+import type {Dialect} from './analyzer';
 
 const boolOps = ['&', '|', '^'],
 	equalityOps = ['==', '===', '!=', '!==', '='],
 	orderOps = ['<', '>', '<=', '>='],
 	arithOps = ['+', '-', '*', '/', '%', '**'],
 	unaryOps = ['+', '-'];
+
+const isKeyword = (identifier: string): boolean =>
+	relationKeywords.includes(identifier) || valueKeywords.has(identifier) || conditionKeywords.has(identifier);
 
 /**
  * A parser for the AbuseFilter syntax.
@@ -26,6 +30,17 @@ export class Parser {
 	private mPos: number;
 	// TODO: It'd be better to use some Queue<Token> like structure to avoid using mPos and mCur
 
+	/** Non-syntax errors found during parsing. */
+	private diagnostics: ParserException[];
+
+	/** Local variables declared in the filter. */
+	private locals = new Set<string>();
+
+	/**
+	 * @param dialect
+	 */
+	public constructor(private dialect: Dialect) {}
+
 	/**
 	 * Parses a list of AbuseFilter tokens into an expression tree.
 	 *
@@ -35,7 +50,14 @@ export class Parser {
 	public parse(tokens: readonly Token[]): void {
 		this.tokens = tokens;
 		this.mPos = -1; // -1 so that the first call to move() sets it to 0
+		this.diagnostics = [];
+		this.locals.clear();
 		this.doLevelEntry();
+		if (this.diagnostics.length > 0) {
+			const error = this.diagnostics.pop()!;
+			error.warnings = this.diagnostics;
+			throw error;
+		}
 	}
 
 	/**
@@ -104,42 +126,42 @@ export class Parser {
 	}
 
 	/** Handles the semicolon operator. */
-	private doLevelSemicolon(): void {
+	private doLevelSemicolon(): Token | null {
+		let statement: Token | null = null;
 		do {
 			// At the first iteration it can be garbage but the variable is used only
 			// if there are at least two statements. It's guaranteed to be set correctly then.
 			this.move();
-
 			if (this.is(TokenType.EndOfStream) || this.is(TokenType.Parenthesis, ')')) {
 				// Handle special cases which the other parser handled in doLevelAtom
-				return;
+				break;
 			}
 
 			// Allow empty statements.
 			if (this.is(TokenType.StatementSeparator)) {
 				continue;
 			}
-
-			this.doLevelSet();
+			statement = this.doLevelSet();
 		} while (this.is(TokenType.StatementSeparator));
+		return statement;
 	}
 
 	/** Handles variable assignment. */
-	private doLevelSet(): void {
+	private doLevelSet(): Token | null {
 		if (this.is(TokenType.Identifier)) {
 			// Speculatively parse the assignment statement assuming it can
 			// potentially be an assignment, but roll back if it isn't.
 			// @todo Use this.getNextToken for clearer code
 			const initialState = this.getState();
+			const {current} = this;
 			this.move();
-
 			if (this.is(TokenType.Operator, ':=')) {
+				this.throwInternal(current);
+				this.locals.add(current.value);
 				this.move();
 				this.doLevelSet();
-
-				return;
+				return null;
 			}
-
 			if (this.is(TokenType.SquareBracket, '[')) {
 				this.move();
 
@@ -152,14 +174,16 @@ export class Parser {
 						this.throwExpectedNotFound(']');
 					}
 				}
-
 				this.move();
 				if (this.is(TokenType.Operator, ':=')) {
+					if (!this.throwInternal(current)) {
+						this.throwUndefined(current);
+					}
 					this.move();
 					this.doLevelSet();
 
 					// TODO: index could be null, but the original parser acts this way
-					return;
+					return null;
 				}
 			}
 
@@ -167,49 +191,41 @@ export class Parser {
 			// and assume this was just a literal.
 			this.setState(initialState);
 		}
-
-		this.doLevelConditions();
+		return this.doLevelConditions();
 	}
 
 	/** Handles ternary operator and if-then-else-end. */
-	private doLevelConditions(): void {
+	private doLevelConditions(): Token | null {
 		if (this.is(TokenType.Keyword, 'if')) {
 			this.move();
 			this.doLevelBoolOps();
-
 			if (!this.is(TokenType.Keyword, 'then')) {
 				this.throwExpectedNotFound('then');
 			}
 			this.move();
-
 			this.doLevelConditions();
-
 			if (this.is(TokenType.Keyword, 'else')) {
 				this.move();
-
 				this.doLevelConditions();
 			}
-
 			if (!this.is(TokenType.Keyword, 'end')) {
 				this.throwExpectedNotFound('end');
 			}
 			this.move();
-
-			return;
+			return null;
 		}
-
-		this.doLevelBoolOps();
+		const condition = this.doLevelBoolOps();
 		if (this.is(TokenType.Operator, '?')) {
 			this.move();
-
 			this.doLevelConditions();
 			if (!this.is(TokenType.Operator, ':')) {
 				this.throwExpectedNotFound(':');
 			}
 			this.move();
-
 			this.doLevelConditions();
+			return null;
 		}
+		return condition;
 	}
 
 	/**
@@ -217,84 +233,90 @@ export class Parser {
 	 * @param ops The operators to handle.
 	 * @param method The method to call for the next level.
 	 */
-	private doLevelBinaryOps(ops: string[], method: 'doLevelCompares' | 'doLevelBoolInvert'): void {
-		this[method]();
-
+	private doLevelBinaryOps(ops: string[], method: 'doLevelCompares' | 'doLevelBoolInvert'): Token | null {
+		let leftOperand = this[method]();
 		while (this.is(TokenType.Operator, ops)) {
+			leftOperand = null;
 			this.move();
 			this[method]();
 		}
+		return leftOperand;
 	}
 
 	/** Handles logic operators. */
-	private doLevelBoolOps(): void {
-		this.doLevelBinaryOps(boolOps, 'doLevelCompares');
+	private doLevelBoolOps(): Token | null {
+		return this.doLevelBinaryOps(boolOps, 'doLevelCompares');
 	}
 
 	/** Handles comparison operators. */
-	private doLevelCompares(): void {
-		this.doLevelArithRels();
+	private doLevelCompares(): Token | null {
+		let leftOperand = this.doLevelArithRels();
+
 		// Only allow either a single operation, or a combination of a single equalityOps and a single
 		// orderOps. This resembles what PHP does, and allows `a < b == c` while rejecting `a < b < c`
 		let allowedOps = [...equalityOps, ...orderOps];
-
 		while (this.is(TokenType.Operator, allowedOps)) {
+			leftOperand = null;
 			const disallowedOps = equalityOps.includes(this.current.value) ? equalityOps : orderOps;
 			allowedOps = allowedOps.filter(op => !disallowedOps.includes(op));
-
 			this.move();
 			this.doLevelArithRels();
 		}
+		return leftOperand;
 	}
 
 	/** Handle arithmetic operators. */
-	private doLevelArithRels(): void {
-		this.doLevelBinaryOps(arithOps, 'doLevelBoolInvert');
+	private doLevelArithRels(): Token | null {
+		return this.doLevelBinaryOps(arithOps, 'doLevelBoolInvert');
 	}
 
 	/** Handles boolean inversion. */
-	private doLevelBoolInvert(): void {
+	private doLevelBoolInvert(): Token | null {
 		if (this.is(TokenType.Operator, '!')) {
 			this.move();
+			this.doLevelKeywordOperators();
+			return null;
 		}
-
-		this.doLevelKeywordOperators();
+		return this.doLevelKeywordOperators();
 	}
 
 	/** Handles keyword operators. */
-	private doLevelKeywordOperators(): void {
-		this.doLevelUnarys();
-
+	private doLevelKeywordOperators(): Token | null {
+		const leftOperand = this.doLevelUnarys();
 		if (this.is(TokenType.Keyword, relationKeywords)) {
 			this.move();
 			this.doLevelUnarys();
+			return null;
 		}
+		return leftOperand;
 	}
 
 	/** Handles unary operators. */
-	private doLevelUnarys(): void {
+	private doLevelUnarys(): Token | null {
 		if (this.is(TokenType.Operator, unaryOps)) {
 			this.move();
+			this.doLevelArrayElements();
+			return null;
 		}
-
-		this.doLevelArrayElements();
+		return this.doLevelArrayElements();
 	}
 
 	/** Handles accessing an array element by an offset. */
-	private doLevelArrayElements(): void {
-		this.doLevelParenthesis();
+	private doLevelArrayElements(): Token | null {
+		let array = this.doLevelParenthesis();
 		while (this.is(TokenType.SquareBracket, '[')) {
+			array = null;
 			this.doLevelSemicolon(); // TODO: index could be null, but the original parser acts this way
-
 			if (!this.is(TokenType.SquareBracket, ']')) {
 				this.throwExpectedNotFound(']');
 			}
 			this.move();
 		}
+		return array;
 	}
 
 	/** Handles parenthesis. */
-	private doLevelParenthesis(): void {
+	private doLevelParenthesis(): Token | null {
 		if (this.is(TokenType.Parenthesis, '(')) {
 			if (this.nextIs(TokenType.Parenthesis, ')')) {
 				// Empty parentheses are never allowed
@@ -302,48 +324,66 @@ export class Parser {
 				this.throwUnexpectedToken();
 			}
 			// TODO: result could be null, but the original parser acts this way
-			this.doLevelSemicolon();
-
+			const result = this.doLevelSemicolon();
 			if (!this.is(TokenType.Parenthesis, ')')) {
 				this.throwExpectedNotFound(')');
 			}
 			this.move();
-
-			return;
+			return result;
 		}
-
-		this.doLevelFunction();
+		return this.doLevelFunction();
 	}
 
 	/** Handles function calls. */
-	private doLevelFunction(): void {
+	private doLevelFunction(): Token | null {
 		if (this.is(TokenType.Identifier) && this.nextIs(TokenType.Parenthesis, '(')) {
+			if (this.dialect.functions?.includes(this.current.value) === false) {
+				this.throw('unrecognized function', true);
+			}
+			const {value} = this.current;
 			this.move();
-
 			if (this.nextIs(TokenType.Parenthesis, ')')) {
 				this.move();
 			} else {
+				let setFlag = value === 'set' || value === 'set_var';
 				do {
-					this.doLevelSemicolon();
+					const thisArg = this.doLevelSemicolon();
+					if (setFlag) {
+						setFlag = false;
+						if (thisArg?.type === TokenType.StringLiteral) {
+							thisArg.type = TokenType.Identifier;
+							thisArg.value = thisArg.value.toLowerCase();
+							this.throwInternal(thisArg);
+							this.locals.add(thisArg.value);
+						}
+					}
 				} while (this.is(TokenType.Comma));
 				if (!this.is(TokenType.Parenthesis, ')')) {
 					this.throwExpectedNotFound(')');
 				}
 			}
-
 			this.move();
-
-			return;
+			return null;
 		}
-
-		this.doLevelAtom();
+		return this.doLevelAtom();
 	}
 
 	/** Handle literals. */
-	private doLevelAtom(): void {
-		const {type, value} = this.current;
+	private doLevelAtom(): Token | null {
+		const {current} = this,
+			{type, value} = current;
 		switch (type) {
 			case TokenType.Identifier:
+				if (this.dialect.disabled?.includes(value)) {
+					this.throw('use of disabled', true);
+				} else if (this.dialect.deprecated?.includes(value)) {
+					this.throw('use of deprecated', true, 'warning');
+				} else if (this.dialect.functions?.includes(value) || isKeyword(value)) {
+					this.throw('incorrect use of internal', true);
+				} else if (this.dialect.variables?.includes(value) === false) {
+					this.throwUndefined();
+				}
+				break;
 			case TokenType.StringLiteral:
 			case TokenType.FloatLiteral:
 			case TokenType.IntLiteral:
@@ -352,10 +392,8 @@ export class Parser {
 				if (valueKeywords.has(value)) {
 					break;
 				}
-
 				this.throw('unrecognized');
 				// no fall through
-
 			case TokenType.SquareBracket:
 				if (value === '[') {
 					while (true) {
@@ -363,9 +401,7 @@ export class Parser {
 						if (this.is(TokenType.SquareBracket, ']')) {
 							break;
 						}
-
 						this.doLevelSet();
-
 						if (this.is(TokenType.SquareBracket, ']')) {
 							break;
 						}
@@ -373,29 +409,53 @@ export class Parser {
 							this.throwExpectedNotFound('," or "]');
 						}
 					}
-
 					break;
 				}
-
 				// Fallthrough expected
 			default:
 				this.throwUnexpectedToken();
 		}
-
 		this.move();
+		return type === TokenType.StringLiteral ? current : null;
+	}
+
+	/**
+	 * Prepares a ParserException for the given token.
+	 * @param token
+	 * @param message
+	 * @param quiet Whether to suppress the error.
+	 * @param severity
+	 */
+	private getException(
+		token: Token,
+		message: string,
+		severity?: 'error' | 'warning',
+		quiet = true,
+	): ParserException {
+		const {type, value, start, end} = token;
+		return new ParserException(
+			`${message} ${TokenType[type]} ${value && JSON.stringify(value)}`,
+			start,
+			end,
+			quiet ? undefined : this.diagnostics,
+			severity,
+		);
 	}
 
 	/**
 	 * Throws an exception stating the current token.
 	 * @param message
+	 * @param quiet Whether to suppress the error.
+	 * @param severity
 	 */
-	private throw(message: string): never {
-		const {type, value, start, end} = this.current;
-		throw new ParserException(
-			`${message} ${TokenType[type]} ${value && JSON.stringify(value)}`,
-			start,
-			end,
-		);
+	private throw(message: string, quiet?: false): never;
+	private throw(message: string, quiet: true, severity?: 'error' | 'warning'): void;
+	private throw(message: string, quiet = false, severity?: 'error' | 'warning'): void {
+		const error = this.getException(this.current, message, severity, quiet);
+		if (!quiet) {
+			throw error;
+		}
+		this.diagnostics.push(error);
 	}
 
 	/**
@@ -411,6 +471,39 @@ export class Parser {
 	 */
 	private throwExpectedNotFound(expected: string): never {
 		this.throw(`expected "${expected}" instead of`);
+	}
+
+	/**
+	 * Throws an exception stating that an internal identifier is being redeclared.
+	 * @param token The token being assigned to.
+	 */
+	private throwInternal(token: Token): boolean {
+		const {functions, variables, deprecated, disabled} = this.dialect,
+			{value} = token;
+		if (
+			functions?.includes(value)
+			|| variables?.includes(value)
+			|| deprecated?.includes(value)
+			|| disabled?.includes(value)
+			|| isKeyword(value)
+		) {
+			this.diagnostics.push(this.getException(token, 'assign to internal'));
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Throws an exception stating that an undefined local variable is being used.
+	 * @param token The token being assigned to.
+	 */
+	private throwUndefined(token = this.current): boolean {
+		const {value} = token;
+		if (!this.locals.has(value)) {
+			this.diagnostics.push(this.getException(token, 'undefined local', 'warning'));
+			return true;
+		}
+		return false;
 	}
 }
 

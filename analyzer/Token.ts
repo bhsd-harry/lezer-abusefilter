@@ -17,7 +17,6 @@ export class Token {
 	 */
 	public constructor(public type: TokenType, public value: string, public start: number, len = value.length) {
 		this.end = start + len;
-
 		if (type === TokenType.EndOfStream) {
 			this.value = Token.EOF;
 		}

@@ -1,4 +1,4 @@
-import type {Dialect} from './tokens';
+import type {Dialect} from '../analyzer/analyzer';
 
 export default {
 	functions: [

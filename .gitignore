@@ -1,5 +1,6 @@
 /.eslintcache
 dist/
+!/dist/dialect.test.js
 /build
 /src/parser.*js
 /analyzer/*.js

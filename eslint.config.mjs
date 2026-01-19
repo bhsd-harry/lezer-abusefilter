@@ -41,5 +41,8 @@ export default [
 				project: './test/tsconfig.json',
 			},
 		},
+		rules: {
+			'es-x/no-regexp-lookbehind-assertions': 0,
+		},
 	},
 ];
