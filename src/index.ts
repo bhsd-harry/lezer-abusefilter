@@ -10,11 +10,14 @@ import {
 } from '@codemirror/language';
 import {styleTags, tags} from '@lezer/highlight';
 import {parser} from './parser.js';
-import {data} from './tokens.js';
+import {data, startKeywords} from './tokens.js';
+import analyze from '../analyzer/analyzer.js';
 import type {Text} from '@codemirror/state'; // eslint-disable-line @typescript-eslint/no-shadow
 import type {CompletionContext, CompletionResult, Completion} from '@codemirror/autocomplete';
+import type {LintSource} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
 import type {Dialect} from './tokens';
+import type {ParserException} from '../analyzer/analyzer';
 
 export type {Dialect};
 
@@ -23,7 +26,7 @@ const getVarAndFunc = (): Completion[] => [
 	...data.functions.map((label): Completion => ({label, type: 'function'})),
 ];
 const getKeywords = (words: string[]): Completion[] => words.map((label): Completion => ({label, type: 'keyword'}));
-const constants = getKeywords(['true', 'false', 'null', 'if']),
+const constants = getKeywords([...startKeywords]),
 	relations = getKeywords(['in', 'like', 'matches', 'contains', 'rlike', 'regex', 'irlike']),
 	keywords = new Set(['if', 'then', 'else']);
 
@@ -169,4 +172,25 @@ export const abusefilter = (dialect?: Dialect): LanguageSupport => {
 			}
 		},
 	}));
+};
+
+export const analyzer: LintSource = view => {
+	try {
+		analyze(view.state.doc.toString());
+	} catch (e) {
+		const {message, from, to = from} = e as ParserException;
+		if (from === undefined) { // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+			throw e;
+		}
+		return [
+			{
+				from,
+				to,
+				severity: 'error',
+				source: 'AbuseFilter analyzer',
+				message,
+			},
+		];
+	}
+	return [];
 };

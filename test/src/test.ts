@@ -4,7 +4,7 @@ import * as assert from 'assert';
 import parse from './parser';
 import type {ObjNode} from './parser';
 
-declare interface Test {
+export interface Test {
 	desc: string;
 	code: string;
 	parsed: ObjNode;

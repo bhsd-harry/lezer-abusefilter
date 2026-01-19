@@ -36,3 +36,11 @@ You can also import the [LR language](https://codemirror.net/docs/ref/#language.
 ```ts
 import {abusefilterLanguage} from '@bhsd/lezer-abusefilter';
 ```
+
+# Lint Source
+
+This package also provides a [lint source](https://codemirror.net/docs/ref/#lint.LintSource) for MediaWiki AbuseFilter syntax checking.
+
+```ts
+import {analyzer} from '@bhsd/lezer-abusefilter';
+```

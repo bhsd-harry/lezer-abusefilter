@@ -10,7 +10,8 @@ import {
 import {defaultKeymap, history as historyExtension, historyKeymap, indentWithTab} from '@codemirror/commands';
 import {closeBrackets, autocompletion, acceptCompletion} from '@codemirror/autocomplete';
 import {searchKeymap} from '@codemirror/search';
-import {abusefilter} from './index';
+import {linter, lintGutter} from '@codemirror/lint';
+import {abusefilter, analyzer} from './index';
 import dialect from './dialect.test';
 
 const container = document.getElementById('wpTextbox')!,
@@ -21,6 +22,8 @@ const container = document.getElementById('wpTextbox')!,
 		closeBrackets(),
 		autocompletion(),
 		foldGutter(),
+		linter(analyzer),
+		lintGutter(),
 		indentOnInput(),
 		EditorView.lineWrapping,
 		lineNumbers(),

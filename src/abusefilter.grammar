@@ -1,6 +1,6 @@
 @precedence {
-	member,
 	call,
+	member,
 	unary,
 	rel @left,
 	inv,

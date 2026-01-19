@@ -1,4 +1,6 @@
 /.eslintcache
 dist/
+/build
 /src/parser.*js
+/analyzer/*.js
 /.vscode/
