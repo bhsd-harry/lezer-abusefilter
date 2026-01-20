@@ -78,7 +78,7 @@ export const abusefilterLanguage = LRLanguage.define({
 				BitOp: tags.logicOperator,
 				LogicOp: tags.logicOperator,
 				Equals: tags.updateOperator,
-				Number: tags.number,
+				Num: tags.number,
 			}),
 			indentNodeProp.add({
 				ArrayExpression: delimitedIndent({closing: ']'}),

@@ -152,6 +152,7 @@ export default {
         'global_account_editcount',
         'user_app',
         'oauth_consumer',
+        'revertrisk_level',
         'ip_reputation_tunnel_operators',
         'ip_reputation_risk_types',
         'ip_reputation_client_proxies',

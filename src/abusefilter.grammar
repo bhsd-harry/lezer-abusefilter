@@ -14,7 +14,7 @@
 }
 
 // expression must be delimited by ";" or EOF
-@top Script { statement }
+@top Script { statements }
 
 @skip {} {
 	// String may contain newlines
@@ -34,7 +34,12 @@
 
 @skip { spaces | newline | Comment }
 
-statement { expression? (";" expression?)* }
+statements { statement? (";" statement?)* }
+
+statement {
+	expression |
+	AssignmentExpression { (VarName | MemberExpression) !assign ":=" statement }
+}
 
 expression[@isGroup=Expression] {
 	// Simple expressions
@@ -51,13 +56,12 @@ expression[@isGroup=Expression] {
 
 	// Complex expressions
 	ArrayExpression { "[" commaSep "]" } |
-	ParenthesizedExpression { "(" statement ")" } |
+	ParenthesizedExpression { "(" statements ")" } |
 	UnaryExpression |
 	MemberExpression |
 	BinaryExpression |
 	IfStatement { kw<"if"> expression kw<"then"> expression (kw<"else"> expression)? kw<"end"> } |
 	ConditionalExpression { expression !ternary LogicOp<"?"> expression LogicOp<":"> expression } |
-	AssignmentExpression { (VarName | MemberExpression) !assign ":=" expression } |
 
 	// external token
 	CallExpression { (Func | Callee) !call ArgList }
@@ -66,7 +70,7 @@ expression[@isGroup=Expression] {
 kw<term> { @specialize[@name={term}]<identifier, term> }
 
 // allow trailing comma but not sparse items
-commaSep { "" | expression ("," expression)* ","? }
+commaSep { "" | statement ("," statement)* ","? }
 
 UnaryExpression {
 	!unary plusMin expression |
@@ -75,7 +79,7 @@ UnaryExpression {
 
 plusMin { ArithOp<"+" | "-"> }
 
-MemberExpression { expression !member "[" expression? "]" }
+MemberExpression { expression !member "[" statements "]" }
 
 BinaryExpression {
 	expression !rel relation expression |
