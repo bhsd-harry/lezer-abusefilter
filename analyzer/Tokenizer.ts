@@ -37,6 +37,13 @@ const numberBases = new Map<string, number>([
 	['o', 8],
 ]);
 
+/** Lists all digits that are legal for a number in a given base */
+const digitsInBases = new Map<number, RegExp>([
+	[2, /^[01]+$/u],
+	[8, /^[0-7]+$/u],
+	[16, /^[\da-f]+$/iu],
+]);
+
 /** List of relation keywords. */
 export const relationKeywords = ['in', 'like', 'contains', 'matches', 'rlike', 'irlike', 'regex'],
 	valueKeywords = new Set(['true', 'false', 'null']),
@@ -151,12 +158,12 @@ export class Tokenizer {
 			// `0x0a` and not as an identifier
 			if (number.includes('.')) {
 				const numberValue = parseFloat(number);
-				if (!isNaN(numberValue)) {
+				if (!Number.isNaN(numberValue)) {
 					return new Token(TokenType.FloatLiteral, String(numberValue), offset, tokenLength);
 				}
-			} else {
+			} else if (!base || digitsInBases.get(base)!.test(number)) {
 				const numberValue = parseInt(number, base);
-				if (!isNaN(numberValue)) {
+				if (!Number.isNaN(numberValue)) {
 					return new Token(TokenType.IntLiteral, String(numberValue), offset, tokenLength);
 				}
 			}
