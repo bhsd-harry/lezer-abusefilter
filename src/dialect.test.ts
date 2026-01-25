@@ -36,6 +36,7 @@ export default {
 		'sanitize',
 	],
 	deprecated: [
+		'accountname',
 		'article_text',
 		'article_prefixedtext',
 		'article_namespace',
@@ -64,7 +65,8 @@ export default {
 	],
 	variables: [
 		'timestamp',
-		'accountname',
+		'account_name',
+		'account_type',
 		'action',
 		'added_lines',
 		'edit_delta',

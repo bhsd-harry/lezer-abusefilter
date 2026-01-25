@@ -249,6 +249,7 @@ export class Parser {
 	}
 
 	/** Handles comparison operators. */
+	// eslint-disable-next-line @typescript-eslint/no-unused-private-class-members
 	private doLevelCompares(): Token | null {
 		let leftOperand = this.doLevelArithRels();
 
@@ -271,6 +272,7 @@ export class Parser {
 	}
 
 	/** Handles boolean inversion. */
+	// eslint-disable-next-line @typescript-eslint/no-unused-private-class-members
 	private doLevelBoolInvert(): Token | null {
 		if (this.is(TokenType.Operator, '!')) {
 			this.move();
