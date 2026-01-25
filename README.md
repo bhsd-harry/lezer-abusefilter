@@ -1,7 +1,7 @@
+# @bhsd/lezer-abusefilter
+
 [![npm version](https://badge.fury.io/js/@bhsd%2Flezer-abusefilter.svg)](https://www.npmjs.com/package/@bhsd/lezer-abusefilter)
 [![CodeQL](https://github.com/bhsd-harry/lezer-abusefilter/actions/workflows/codeql.yml/badge.svg)](https://github.com/bhsd-harry/lezer-abusefilter/actions/workflows/codeql.yml)
-
-# @bhsd/lezer-abusefilter
 
 This repository contains [CodeMirror 6](https://codemirror.net/6/) language support for [MediaWiki AbuseFilter syntax](https://www.mediawiki.org/wiki/Extension:AbuseFilter/Rules_format). Here is an online [demo](https://bhsd-harry.github.io/lezer-abusefilter/), with syntax highlighting, indentation, autocompletion, and code folding.
 
