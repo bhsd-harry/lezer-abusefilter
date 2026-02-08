@@ -10,7 +10,7 @@ then
 	gh release create "$1" --notes-file release-notes.md -t "v$1" --verify-tag --latest="${3-true}"
 	rm release-notes.md
 else
-	sed -i '' -E "s/\"version\": \".+\"/\"version\": \"$1\"/" package.json
+	gsed -i -E "s/\"version\": \".+\"/\"version\": \"$1\"/" package.json
 	npm run lint && npm run build && npm run build:test && npm run test:real
 	if [[ $? -eq 0 ]]
 	then

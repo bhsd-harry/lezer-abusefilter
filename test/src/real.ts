@@ -1,4 +1,5 @@
 import {execSync} from 'child_process';
+import {setTimeout as sleep} from 'timers/promises';
 import {apis} from '@bhsd/test-util';
 import {refreshStdout} from '@bhsd/nodejs';
 import parse from './parser';
@@ -51,6 +52,7 @@ const getFilters = async (url: string): Promise<Required<AbuseFilter>[]> => {
 		try {
 			let failed = 0;
 			for (const {id, description, pattern} of await getFilters(`${url}/api.php`)) {
+				await sleep(1);
 				refreshStdout(`${id} ${description}`);
 				try {
 					parse(pattern);
