@@ -56,6 +56,13 @@ const reNum = /^(?:0x[\dA-Fa-f]+|0o[0-7]+|0b[01]+|\d+(?:\.\d*)?|\.\d+)$/u;
 
 export const startKeywords = new Set(['true', 'false', 'null', 'if']);
 
+export const relations = new ExternalTokenizer(input => {
+	const word = eat(input, isAlphaNum);
+	if (data.keywords.includes(word)) {
+		input.acceptToken(Rel);
+	}
+});
+
 export const tokens = new ExternalTokenizer(input => {
 	let word = eat(input, isAlphaNum);
 	const hasDot = input.next === ch.Dot;
@@ -66,8 +73,6 @@ export const tokens = new ExternalTokenizer(input => {
 	}
 	if (startKeywords.has(word)) {
 		//
-	} else if (data.keywords.includes(word)) {
-		input.acceptToken(Rel);
 	} else if (reNum.test(word)) {
 		input.acceptToken(Num);
 	} else if (!hasDot && word) {

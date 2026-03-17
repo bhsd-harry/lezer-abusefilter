@@ -92,6 +92,10 @@ BinaryExpression {
 
 ArgList { "(" commaSep ")" }
 
+@external tokens relations from './tokens.js' {
+	Rel
+}
+
 @external tokens tokens from './tokens.js' {
 	Callee,
 	Func,
@@ -99,7 +103,6 @@ ArgList { "(" commaSep ")" }
 	DeprecatedVar,
 	DisabledVar,
 	GlobalVar,
-	Rel,
 	Num
 }
 

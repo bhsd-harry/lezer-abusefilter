@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.2.0
+
+*2026-03-18*
+
+**Changed**
+
+- Relational keywords (e.g., `like` and `in`) are now dynamically specified
+
 ## 0.1.2
 
 *2026-01-22*

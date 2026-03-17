@@ -16,13 +16,14 @@ npm install @bhsd/lezer-abusefilter
 
 ## Language Support
 
-It is recommended to dynamically generate [language support](https://codemirror.net/docs/ref/#language.LanguageSupport) for MediaWiki AbuseFilter with lists of predefined [variables](https://www.mediawiki.org/wiki/Extension:AbuseFilter/Rules_format#Variables_from_AbuseFilter) and [functions](https://www.mediawiki.org/wiki/Extension:AbuseFilter/Rules_format#Functions) from [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter). These lists will be used for better syntax highlighting and autocompletion.
+It is recommended to dynamically generate [language support](https://codemirror.net/docs/ref/#language.LanguageSupport) for MediaWiki AbuseFilter with lists of predefined [keywords](https://www.mediawiki.org/wiki/Extension:AbuseFilter/Rules_format#Keywords), [variables](https://www.mediawiki.org/wiki/Extension:AbuseFilter/Rules_format#Variables_from_AbuseFilter) and [functions](https://www.mediawiki.org/wiki/Extension:AbuseFilter/Rules_format#Functions) from [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter). These lists will be used for better syntax highlighting and autocompletion.
 
 ```ts
 import {abusefilter} from '@bhsd/lezer-abusefilter';
 import type {LanguageSupport} from '@codemirror/language';
 
 const langSupport: LanguageSupport = abusefilter({
+	keywords: [],
 	functions: [],
 	variables: [],
 	deprecated: [], // List of deprecated variables
