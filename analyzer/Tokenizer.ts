@@ -44,17 +44,8 @@ const digitsInBases = new Map<number, RegExp>([
 	[16, /^[\da-f]+$/iu],
 ]);
 
-/** List of relation keywords. */
-export const relationKeywords = ['in', 'like', 'contains', 'matches', 'rlike', 'irlike', 'regex'],
-	valueKeywords = new Set(['true', 'false', 'null']),
+export const valueKeywords = new Set(['true', 'false', 'null']),
 	conditionKeywords = new Set(['if', 'then', 'else', 'end']);
-
-/** Set of keywords recognized by the tokenizer. */
-const keywords = new Set([
-	...relationKeywords,
-	...valueKeywords,
-	...conditionKeywords,
-]);
 
 /**
  * Essential class for AbuseFilter rule preparation before actual parsing.
@@ -65,12 +56,20 @@ const keywords = new Set([
  */
 export class Tokenizer {
 	private readonly length: number;
+	private readonly keywords: Set<string>;
 
 	/**
 	 * @param input The input string to tokenize.
 	 */
-	public constructor(private input: string) {
+	public constructor(private input: string, relationKeywords: string[] = []) {
 		this.length = input.length;
+
+		/** Set of keywords recognized by the tokenizer. */
+		this.keywords = new Set([
+			...relationKeywords,
+			...valueKeywords,
+			...conditionKeywords,
+		]);
 	}
 
 	/**
@@ -174,7 +173,7 @@ export class Tokenizer {
 		const identifierMatch = identifierRegex.exec(input);
 		if (identifierMatch) {
 			let [identifier] = identifierMatch;
-			const isKeyword = keywords.has(identifier);
+			const isKeyword = this.keywords.has(identifier);
 			const tokenType = isKeyword ? TokenType.Keyword : TokenType.Identifier;
 			if (!isKeyword) {
 				identifier = identifier.toLowerCase();
