@@ -4,4 +4,5 @@ export const Callee: number,
 	DeprecatedVar: number,
 	DisabledVar: number,
 	GlobalVar: number,
+	Rel: number,
 	Num: number;

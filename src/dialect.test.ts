@@ -164,4 +164,5 @@ export default {
 		'ip_reputation_client_count',
 		'ip_reputation_ipoid_known',
 	],
+	keywords: ['in', 'like', 'matches', 'contains', 'rlike', 'regex', 'irlike'],
 } satisfies Dialect;

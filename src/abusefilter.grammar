@@ -82,15 +82,13 @@ plusMin { ArithOp<"+" | "-"> }
 MemberExpression { expression !member "[" statements "]" }
 
 BinaryExpression {
-	expression !rel relation expression |
+	expression !rel Rel expression |
 	expression !exp ArithOp<"**"> expression |
 	expression !times (divide | ArithOp<"%"> | ArithOp<"*">) expression |
 	expression !plus plusMin expression |
 	expression !cmp CompareOp<"<" "="? | ">" "="? | "=" "="? "="? | "!=" "="?> expression |
 	expression !bit BitOp<"|" | "^" | "&"> expression
 }
-
-relation { @specialize[@name=Rel]<identifier, "in" | "like" | "matches" | "contains" | "rlike" | "regex" | "irlike"> }
 
 ArgList { "(" commaSep ")" }
 
@@ -101,6 +99,7 @@ ArgList { "(" commaSep ")" }
 	DeprecatedVar,
 	DisabledVar,
 	GlobalVar,
+	Rel,
 	Num
 }
 

@@ -3,6 +3,7 @@ export interface Dialect {
 	variables?: string[];
 	deprecated?: string[];
 	disabled?: string[];
+	keywords?: string[];
 }
 
 declare const analyze: (filterText: string, dialect: Dialect) => void;

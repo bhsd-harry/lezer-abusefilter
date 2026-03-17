@@ -7,6 +7,7 @@ import {
 	DisabledVar,
 	GlobalVar,
 	Num,
+	Rel,
 } from './parser.terms.js';
 import type {InputStream} from '@lezer/lr';
 import type {Dialect} from '../analyzer/analyzer';
@@ -16,6 +17,7 @@ export const data: Required<Dialect> = {
 	variables: [],
 	deprecated: [],
 	disabled: [],
+	keywords: [],
 };
 
 const ch = {
@@ -64,6 +66,8 @@ export const tokens = new ExternalTokenizer(input => {
 	}
 	if (startKeywords.has(word)) {
 		//
+	} else if (data.keywords.includes(word)) {
+		input.acceptToken(Rel);
 	} else if (reNum.test(word)) {
 		input.acceptToken(Num);
 	} else if (!hasDot && word) {
