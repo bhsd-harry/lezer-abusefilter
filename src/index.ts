@@ -26,7 +26,6 @@ const getVarAndFunc = (): Completion[] => [
 ];
 const getKeywords = (words: string[]): Completion[] => words.map((label): Completion => ({label, type: 'keyword'}));
 const constants = getKeywords([...startKeywords]),
-	relations = getKeywords(['in', 'like', 'matches', 'contains', 'rlike', 'regex', 'irlike']),
 	keywords = new Set(['if', 'then', 'else']);
 
 const cache = new WeakMap<SyntaxNode, Set<string>>();
@@ -162,7 +161,10 @@ export const abusefilter = (dialect?: Dialect): LanguageSupport => {
 					}
 					return {
 						from: inner.from,
-						options: [...controls, ...relations],
+						options: [
+							...controls,
+							...getKeywords(data.keywords),
+						],
 						validFor: /^\w*$/u,
 					};
 				}
