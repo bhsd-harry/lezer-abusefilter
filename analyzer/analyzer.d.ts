@@ -6,6 +6,8 @@ export interface Dialect {
 	keywords?: string[];
 }
 
+export const conditionKeywords: Set<string>;
+
 declare const analyze: (filterText: string, dialect: Dialect) => void;
 export default analyze;
 

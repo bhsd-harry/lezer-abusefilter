@@ -8,7 +8,7 @@ export class Token {
 	public static readonly EOF = '';
 
 	/** The position in the input sequence where this token ends. */
-	public readonly end: number;
+	declare public readonly end: number;
 
 	/**
 	 * @param type The token type.

@@ -4,6 +4,7 @@ import {apis} from '@bhsd/test-util';
 import {refreshStdout} from '@bhsd/nodejs';
 import parse from './parser';
 import analyze from '../../analyzer/analyzer';
+import {data, updateData} from '../../dist/tokens';
 import dialect from '../../dist/dialect.test';
 import type {ParserException} from '../../analyzer/analyzer';
 
@@ -17,6 +18,8 @@ declare interface MediaWikiResponse {
 		readonly abusefilters: AbuseFilter[];
 	};
 }
+
+updateData(dialect);
 
 const {version} = require('../../package.json') as {version: string};
 const failures = new Map<string, number>();
@@ -56,7 +59,7 @@ const getFilters = async (url: string): Promise<Required<AbuseFilter>[]> => {
 				refreshStdout(`${id} ${description}`);
 				try {
 					parse(pattern);
-					analyze(pattern, dialect);
+					analyze(pattern, data);
 				} catch (e) {
 					const error = notDeprecation(e as Error)
 						? e

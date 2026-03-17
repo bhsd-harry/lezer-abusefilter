@@ -55,8 +55,8 @@ export const valueKeywords = new Set(['true', 'false', 'null']),
  * Based on https://phabricator.wikimedia.org/diffusion/EABF/browse/master/includes/Parser/AbuseFilterTokenizer.php
  */
 export class Tokenizer {
-	private readonly length: number;
-	private readonly keywords: Set<string>;
+	declare private readonly length: number;
+	declare private readonly keywords: Set<string>;
 
 	/**
 	 * @param input The input string to tokenize.

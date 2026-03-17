@@ -9,6 +9,7 @@ import {
 	Num,
 	Rel,
 } from './parser.terms.js';
+import {conditionKeywords} from '../analyzer/analyzer.js';
 import type {InputStream} from '@lezer/lr';
 import type {Dialect} from '../analyzer/analyzer';
 
@@ -55,6 +56,14 @@ const eat = (input: InputStream, predicate: (code: number) => boolean): string =
 const reNum = /^(?:0x[\dA-Fa-f]+|0o[0-7]+|0b[01]+|\d+(?:\.\d*)?|\.\d+)$/u;
 
 export const startKeywords = new Set(['true', 'false', 'null', 'if']);
+
+export const updateData = (dialect?: Dialect): void => {
+	if (dialect) {
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		dialect.keywords &&= dialect.keywords.filter(k => !startKeywords.has(k) && !conditionKeywords.has(k));
+		Object.assign(data, dialect);
+	}
+};
 
 export const relations = new ExternalTokenizer(input => {
 	const word = eat(input, isAlphaNum);

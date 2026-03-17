@@ -14,6 +14,7 @@ export default [
 	{
 		files: ['src/*.ts'],
 		rules: {
+			'es-x/no-logical-assignment-operators': 0,
 			'es-x/no-optional-chaining': 0,
 		},
 	},

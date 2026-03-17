@@ -10,7 +10,7 @@ import {
 } from '@codemirror/language';
 import {styleTags, tags} from '@lezer/highlight';
 import {parser} from './parser.js';
-import {data, startKeywords} from './tokens.js';
+import {data, startKeywords, updateData} from './tokens.js';
 import analyze from '../analyzer/analyzer.js';
 import type {Text} from '@codemirror/state'; // eslint-disable-line @typescript-eslint/no-shadow
 import type {CompletionContext, CompletionResult, Completion} from '@codemirror/autocomplete';
@@ -110,9 +110,7 @@ export const abusefilterLanguage = LRLanguage.define({
 });
 
 export const abusefilter = (dialect?: Dialect): LanguageSupport => {
-	if (dialect) {
-		Object.assign(data, dialect);
-	}
+	updateData(dialect);
 	return new LanguageSupport(abusefilterLanguage, abusefilterLanguage.data.of({
 		autocomplete({state, pos}: CompletionContext): CompletionResult | null {
 			const tree = syntaxTree(state),

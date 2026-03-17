@@ -1,8 +1,11 @@
 import * as path from 'path';
 import analyze from '../../analyzer/analyzer';
+import {data, updateData} from '../../dist/tokens';
 import dialect from '../../dist/dialect.test';
 import type {Test} from './test';
 import type {ParserException} from '../../analyzer/analyzer';
+
+updateData(dialect);
 
 const json = path.resolve('test', 'parserTests.json'),
 	// eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -12,7 +15,7 @@ describe('Analyzer Tests', () => {
 	for (const {desc, code} of tests) {
 		it(desc, () => {
 			try {
-				analyze(code, dialect);
+				analyze(code, data);
 			} catch (e) {
 				(e as Error).cause = {message: `\n${code}`};
 				throw e;
@@ -21,7 +24,7 @@ describe('Analyzer Tests', () => {
 			const {index} = re.exec(code)!,
 				incomplete = code.slice(0, index);
 			try {
-				analyze(incomplete, dialect);
+				analyze(incomplete, data);
 				throw new Error('Expected an error to be thrown.');
 			} catch (e) {
 				const {from, to, message, warnings} = e as ParserException;

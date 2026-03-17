@@ -3,7 +3,7 @@
 		"src/*.ts"
 	],
 	"compilerOptions": {
-		"target": "ES2017",
+		"target": "ES2024",
 		"module": "es6",
 		"moduleResolution": "node",
 		"declaration": true,

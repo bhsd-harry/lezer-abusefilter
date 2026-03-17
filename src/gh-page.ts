@@ -12,6 +12,7 @@ import {closeBrackets, autocompletion, acceptCompletion} from '@codemirror/autoc
 import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter} from '@codemirror/lint';
 import {abusefilter, analyzer} from './index';
+import {data} from './tokens';
 import dialect from './dialect.test';
 
 const container = document.getElementById('wpTextbox')!,
@@ -38,4 +39,4 @@ const container = document.getElementById('wpTextbox')!,
 		historyExtension(),
 	],
 	view = new EditorView({parent: container, extensions});
-Object.assign(globalThis, {view, syntaxTree}); // eslint-disable-line es-x/no-global-this
+Object.assign(globalThis, {view, syntaxTree, data}); // eslint-disable-line es-x/no-global-this

@@ -1,5 +1,5 @@
 import {abusefilterLanguage} from '../../dist/index';
-import {data} from '../../dist/tokens';
+import {updateData} from '../../dist/tokens';
 import dialect from '../../dist/dialect.test';
 import type {SyntaxNode} from '@lezer/common';
 
@@ -9,7 +9,7 @@ export interface ObjNode {
 	children?: ObjNode[];
 }
 
-Object.assign(data, dialect);
+updateData(dialect);
 
 const {parser} = abusefilterLanguage;
 

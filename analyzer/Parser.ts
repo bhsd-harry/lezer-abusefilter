@@ -18,17 +18,17 @@ const boolOps = ['&', '|', '^'],
  */
 export class Parser {
 	/** Stores the sequence of tokens that the parser is currently processing. */
-	private tokens: readonly Token[];
+	declare private tokens: readonly Token[];
 
 	/** The current token */
-	private current: Token;
+	declare private current: Token;
 
 	/** The position of the current token */
-	private mPos: number;
+	declare private mPos: number;
 	// TODO: It'd be better to use some Queue<Token> like structure to avoid using mPos and mCur
 
 	/** Non-syntax errors found during parsing. */
-	private diagnostics: ParserException[];
+	declare private diagnostics: ParserException[];
 
 	/** Local variables declared in the filter. */
 	private locals = new Set<string>();
