@@ -10,7 +10,7 @@
 	"bugs": {
 		"url": "https://github.com/bhsd-harry/lezer-abusefilter/issues"
 	},
-	"license": "GPL-3.0",
+	"license": "GPL-3.0-or-later",
 	"files": [
 		"dist/",
 		"!dist/*.test.*",
@@ -47,7 +47,7 @@
 		"@codemirror/lint": "^6.9.5"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.1.0",
+		"@bhsd/code-standard": "^2.1.1",
 		"@bhsd/nodejs": "^0.1.1",
 		"@bhsd/test-util": "^0.3.0",
 		"@codemirror/autocomplete": "^6.20.1",
