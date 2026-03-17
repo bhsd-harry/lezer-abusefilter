@@ -1,6 +1,6 @@
 import {ParserException} from './ParserException.js';
 import {TokenType} from './TokenType.js';
-import {relationKeywords, valueKeywords, conditionKeywords} from './Tokenizer.js';
+import {valueKeywords, conditionKeywords} from './Tokenizer.js';
 import type {Token} from './Token';
 import type {Dialect} from './analyzer';
 
@@ -9,9 +9,6 @@ const boolOps = ['&', '|', '^'],
 	orderOps = ['<', '>', '<=', '>='],
 	arithOps = ['+', '-', '*', '/', '%', '**'],
 	unaryOps = ['+', '-'];
-
-const isKeyword = (identifier: string): boolean =>
-	relationKeywords.includes(identifier) || valueKeywords.has(identifier) || conditionKeywords.has(identifier);
 
 /**
  * A parser for the AbuseFilter syntax.
@@ -107,6 +104,17 @@ export class Parser {
 	 */
 	private nextIs(type: TokenType, value?: string[] | string): boolean {
 		return this.tokens[this.mPos + 1]!.is(type, value);
+	}
+
+	/**
+	 * Convenience function for checking if an identifier is a keyword.
+	 * @param identifier The identifier to check.
+	 * @returns True if the identifier is a keyword.
+	 */
+	private isKeyword(identifier: string): boolean {
+		return this.dialect.keywords?.includes(identifier)
+			|| valueKeywords.has(identifier)
+			|| conditionKeywords.has(identifier);
 	}
 
 	/* Levels */
@@ -285,7 +293,7 @@ export class Parser {
 	/** Handles keyword operators. */
 	private doLevelKeywordOperators(): Token | null {
 		const leftOperand = this.doLevelUnarys();
-		if (this.is(TokenType.Keyword, relationKeywords)) {
+		if (this.is(TokenType.Keyword, this.dialect.keywords)) {
 			this.move();
 			this.doLevelUnarys();
 			return null;
@@ -380,7 +388,7 @@ export class Parser {
 					this.throw('use of disabled', true);
 				} else if (this.dialect.deprecated?.includes(value)) {
 					this.throw('use of deprecated', true, 'warning');
-				} else if (this.dialect.functions?.includes(value) || isKeyword(value)) {
+				} else if (this.dialect.functions?.includes(value) || this.isKeyword(value)) {
 					this.throw('incorrect use of internal', true);
 				} else if (this.dialect.variables?.includes(value) === false) {
 					this.throwUndefined();
@@ -487,7 +495,7 @@ export class Parser {
 			|| variables?.includes(value)
 			|| deprecated?.includes(value)
 			|| disabled?.includes(value)
-			|| isKeyword(value)
+			|| this.isKeyword(value)
 		) {
 			this.diagnostics.push(this.getException(token, 'assign to internal'));
 			return true;
