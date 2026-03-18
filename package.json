@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/lezer-abusefilter",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "Lezer parser for MediaWiki extension AbuseFilter",
 	"keywords": [
 		"mediawiki",
@@ -28,7 +28,7 @@
 	},
 	"scripts": {
 		"prepublishOnly": "npm run build",
-		"build:analyzer": "esbuild analyzer/index.ts --charset=utf8 --target=es2024 --bundle --format=esm --outfile=analyzer/analyzer.js && cp analyzer/analyzer.js build/",
+		"build:analyzer": "esbuild analyzer/index.ts --charset=utf8 --target=es2017 --bundle --format=esm --outfile=analyzer/analyzer.js && cp analyzer/analyzer.js build/",
 		"build:parser": "lezer-generator src/abusefilter.grammar -o src/parser.js",
 		"build:core": "tsc && cp src/parser.*js dist/",
 		"build:gh-page": "esbuild src/gh-page.ts --charset=utf8 --bundle --format=esm --outdir=build && esbuild src/gh-page.ts --charset=utf8 --target=es2019 --bundle --format=esm --minify --sourcemap --outdir=.",
