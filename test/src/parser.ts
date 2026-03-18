@@ -11,7 +11,7 @@ export interface ObjNode {
 
 updateData(dialect);
 
-const {parser} = abusefilterLanguage;
+const parser = abusefilterLanguage.parser.configure({strict: true});
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
 const toObj = (code: string, {name, from, to, firstChild}: SyntaxNode): ObjNode => {

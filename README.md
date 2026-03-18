@@ -43,6 +43,8 @@ import {abusefilterLanguage} from '@bhsd/lezer-abusefilter';
 
 This package also provides a [lint source](https://codemirror.net/docs/ref/#lint.LintSource) adapted from [AbuseFilter analyzer](https://meta.wikimedia.org/wiki/User:Msz2001/AbuseFilter_analyzer) for syntax checking.
 
+Extension:AbuseFilter also provides an [API endpoint](https://www.mediawiki.org/w/api.php?action=help&modules=abusefilterchecksyntax) for syntax checking, but it requires permission to access and the error messages are sometimes not very informative. However, it can provide full linting of PCRE regular expressions, which is not perfectly supported by [AbuseFilter analyzer](https://github.com/marcinszwarc/abusefilter-analyzer?tab=readme-ov-file#known-limitations).
+
 ```ts
 import {analyzer} from '@bhsd/lezer-abusefilter';
 ```

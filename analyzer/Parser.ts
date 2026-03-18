@@ -159,7 +159,6 @@ export class Parser {
 		if (this.is(TokenType.Identifier)) {
 			// Speculatively parse the assignment statement assuming it can
 			// potentially be an assignment, but roll back if it isn't.
-			// @todo Use this.getNextToken for clearer code
 			const initialState = this.getState();
 			const {current} = this;
 			this.move();
