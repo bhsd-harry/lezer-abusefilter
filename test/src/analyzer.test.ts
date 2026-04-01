@@ -1,15 +1,11 @@
-import * as path from 'path';
-import analyze from '../../analyzer/analyzer';
-import {data, updateData} from '../../dist/tokens';
-import dialect from '../../dist/dialect.test';
-import type {Test} from './test';
+import analyze from '../../analyzer/analyzer.js';
+import {data, updateData} from '../../dist/tokens.js';
+import dialect from '../../dist/dialect.test.js';
+import tests from '../parserTests.json' with {type: 'json'};
 import type {ParserException} from '../../analyzer/analyzer';
 
 updateData(dialect);
 
-const json = path.resolve('test', 'parserTests.json'),
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
-	tests = require(json) as Test[];
 describe('Analyzer Tests', () => {
 	const re = /(?:[)\]'"]|(?<![\w.])[\w.]+)[^)\]'"\w.]*$/u;
 	for (const {desc, code} of tests) {

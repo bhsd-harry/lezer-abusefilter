@@ -432,8 +432,8 @@ export class Parser {
 	 * Prepares a ParserException for the given token.
 	 * @param token
 	 * @param message
-	 * @param quiet Whether to suppress the error.
 	 * @param severity
+	 * @param quiet Whether to suppress the error.
 	 */
 	private getException(
 		token: Token,

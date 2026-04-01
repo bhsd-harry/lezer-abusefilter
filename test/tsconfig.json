@@ -4,10 +4,15 @@
 		"src/*.ts"
 	],
 	"compilerOptions": {
+		"types": [
+			"node",
+			"mocha"
+		],
 		"target": "ES2024",
-		"module": "commonjs",
+		"module": "esnext",
 		"declaration": false,
 		"removeComments": true,
+		"rootDir": "src",
 		"outDir": "dist"
 	}
 }

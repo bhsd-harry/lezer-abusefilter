@@ -2,10 +2,11 @@ import {execSync} from 'child_process';
 import {setTimeout as sleep} from 'timers/promises';
 import {apis} from '@bhsd/test-util';
 import {refreshStdout} from '@bhsd/nodejs';
-import parse from './parser';
-import analyze from '../../analyzer/analyzer';
-import {data, updateData} from '../../dist/tokens';
-import dialect from '../../dist/dialect.test';
+import parse from './parser.js';
+import analyze from '../../analyzer/analyzer.js';
+import {data, updateData} from '../../dist/tokens.js';
+import dialect from '../../dist/dialect.test.js';
+import packageJson from '../../package.json' with {type: 'json'};
 import type {ParserException} from '../../analyzer/analyzer';
 
 declare interface AbuseFilter {
@@ -21,7 +22,6 @@ declare interface MediaWikiResponse {
 
 updateData(dialect);
 
-const {version} = require('../../package.json') as {version: string};
 const failures = new Map<string, number>();
 
 const notDeprecation = (e: Error): boolean => !e.message.startsWith('use of deprecated ');
@@ -40,7 +40,7 @@ const getFilters = async (url: string): Promise<Required<AbuseFilter>[]> => {
 		{query}: MediaWikiResponse = await (await fetch(`${url}?${String(new URLSearchParams(qs))}`, {
 			headers: {
 				'User-Agent': `@bhsd/lezer-abusefilter/${
-					version
+					packageJson.version
 				} (https://www.npmjs.com/package/@bhsd/lezer-abusefilter; ${
 					execSync('git config user.email', {encoding: 'utf8'}).trim()
 				}) Node.js/${process.version}`,
@@ -65,7 +65,8 @@ const getFilters = async (url: string): Promise<Required<AbuseFilter>[]> => {
 						? e
 						: (e as ParserException).warnings?.find(notDeprecation);
 					if (error) {
-						console.error(`\n解析 ${id} 号滥用过滤器时出错！`, error);
+						console.error(`\n解析 ${id} 号滥用过滤器时出错！`);
+						console.error(error);
 						failed++;
 					}
 				}
@@ -75,7 +76,8 @@ const getFilters = async (url: string): Promise<Required<AbuseFilter>[]> => {
 			}
 			console.log();
 		} catch (e) {
-			console.error(`访问${site}的API端口时出错！`, e);
+			console.error(`访问${site}的API端口时出错！`);
+			console.error(e);
 		}
 	}
 	if (failures.size > 0) {

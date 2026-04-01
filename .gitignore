@@ -6,3 +6,4 @@ dist/
 /analyzer/*.js
 /.vscode/
 /*.map
+/package-lock.json

@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as assert from 'assert';
-import parse from './parser';
+import parse from './parser.js';
+import tests from '../parserTests.json' with {type: 'json'};
 import type {ObjNode} from './parser';
 
 export interface Test {
@@ -13,8 +14,6 @@ export interface Test {
 const dir = path.join('test', 'core'),
 	files = fs.readdirSync(dir).filter(f => f.endsWith('.t')),
 	json = path.resolve('test', 'parserTests.json'),
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
-	tests = require(json) as Test[],
 	results: Test[] = [];
 describe('Parser Tests', () => {
 	for (let i = 0; i < files.length; i++) {
