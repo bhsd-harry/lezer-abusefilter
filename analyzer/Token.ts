@@ -29,12 +29,11 @@ export class Token {
 	 * @returns True if type and value are equal. If value is an array, returns true if the token value is in the array.
 	 */
 	public is(type: TokenType, value?: string[] | string): boolean {
-		if (value === undefined) {
-			return this.type === type;
+		if (this.type !== type) {
+			return false;
+		} else if (value === undefined) {
+			return true;
 		}
-		if (typeof value === 'string') {
-			return this.type === type && this.value === value;
-		}
-		return this.type === type && value.includes(this.value);
+		return typeof value === 'string' ? this.value === value : value.includes(this.value);
 	}
 }

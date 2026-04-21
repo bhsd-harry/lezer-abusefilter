@@ -13,8 +13,10 @@ describe('Analyzer Tests', () => {
 			try {
 				analyze(code, data);
 			} catch (e) {
-				(e as Error).cause = {message: `\n${code}`};
-				throw e;
+				if (!(e as ParserException).message.startsWith('Unused local ')) {
+					(e as Error).cause = {message: `\n${code}`};
+					throw e;
+				}
 			}
 
 			const {index} = re.exec(code)!,

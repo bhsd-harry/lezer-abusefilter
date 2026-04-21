@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.3.0
+
+*2026-04-22*
+
+**Added**
+
+- The [lint source](./README.md#lint-source) now reports errors of unused local variables, invalid first arguments of the `set` and `set_var` functions, missing arguments of function calls, and negative array indices
+
 ## 0.2.0
 
 *2026-03-18*

@@ -1,14 +1,15 @@
 import {ParserException} from './ParserException.js';
 import {TokenType} from './TokenType.js';
 import {valueKeywords, conditionKeywords} from './Tokenizer.js';
-import type {Token} from './Token';
+import {Token} from './Token.js';
 import type {Dialect} from './analyzer';
 
 const boolOps = ['&', '|', '^'],
 	equalityOps = ['==', '===', '!=', '!==', '='],
 	orderOps = ['<', '>', '<=', '>='],
 	arithOps = ['+', '-', '*', '/', '%', '**'],
-	unaryOps = ['+', '-'];
+	unaryOps = ['+', '-'],
+	numberTypes = new Set<TokenType | undefined>([TokenType.FloatLiteral, TokenType.IntLiteral]);
 
 /**
  * A parser for the AbuseFilter syntax.
@@ -31,7 +32,10 @@ export class Parser {
 	declare private diagnostics: ParserException[];
 
 	/** Local variables declared in the filter. */
-	private locals = new Set<string>();
+	private locals = new Map<string, Token>();
+
+	/** Local variables used in the filter. */
+	private usedLocals = new Set<string>();
 
 	/**
 	 * @param dialect
@@ -49,7 +53,13 @@ export class Parser {
 		this.mPos = -1; // -1 so that the first call to move() sets it to 0
 		this.diagnostics = [];
 		this.locals.clear();
+		this.usedLocals.clear();
 		this.doLevelEntry();
+		for (const [local, token] of this.locals) {
+			if (!this.usedLocals.has(local)) {
+				this.throwToken(token, 'Unused local', 'warning');
+			}
+		}
 		if (this.diagnostics.length > 0) {
 			const error = this.diagnostics.pop()!;
 			error.warnings = this.diagnostics;
@@ -164,7 +174,7 @@ export class Parser {
 			this.move();
 			if (this.is(TokenType.Operator, ':=')) {
 				this.throwInternal(current);
-				this.locals.add(current.value);
+				this.locals.set(current.value, current);
 				this.move();
 				this.doLevelSet();
 				return null;
@@ -265,7 +275,7 @@ export class Parser {
 		let allowedOps = [...equalityOps, ...orderOps];
 		while (this.is(TokenType.Operator, allowedOps)) {
 			leftOperand = null;
-			const disallowedOps = equalityOps.includes(this.current.value) ? equalityOps : orderOps;
+			const disallowedOps = this.is(TokenType.Operator, equalityOps) ? equalityOps : orderOps;
 			allowedOps = allowedOps.filter(op => !disallowedOps.includes(op));
 			this.move();
 			this.doLevelArithRels();
@@ -303,8 +313,15 @@ export class Parser {
 	/** Handles unary operators. */
 	private doLevelUnarys(): Token | null {
 		if (this.is(TokenType.Operator, unaryOps)) {
+			const {current} = this;
 			this.move();
-			this.doLevelArrayElements();
+			const operand = this.doLevelArrayElements();
+			if (numberTypes.has(operand?.type)) {
+				// Merge the minus sign with the number literal
+				const {start, value} = current,
+					token = new Token(operand!.type, value + operand!.value, start, operand!.end - start);
+				return token;
+			}
 			return null;
 		}
 		return this.doLevelArrayElements();
@@ -315,9 +332,11 @@ export class Parser {
 		let array = this.doLevelParenthesis();
 		while (this.is(TokenType.SquareBracket, '[')) {
 			array = null;
-			this.doLevelSemicolon(); // TODO: index could be null, but the original parser acts this way
+			const index = this.doLevelSemicolon(); // TODO: index could be null, but the original parser acts this way
 			if (!this.is(TokenType.SquareBracket, ']')) {
 				this.throwExpectedNotFound(']');
+			} else if (numberTypes.has(index?.type) && Number(index!.value) <= -1) {
+				this.throwToken(index!, 'Negative array index');
 			}
 			this.move();
 		}
@@ -347,14 +366,15 @@ export class Parser {
 	private doLevelFunction(): Token | null {
 		if (this.is(TokenType.Identifier) && this.nextIs(TokenType.Parenthesis, '(')) {
 			if (this.dialect.functions?.includes(this.current.value) === false) {
-				this.throw('unrecognized function', true);
+				this.throw('Unrecognized function');
 			}
-			const {value} = this.current;
+			const {current} = this;
 			this.move();
 			if (this.nextIs(TokenType.Parenthesis, ')')) {
+				this.throwToken(current, 'No arguments given to function');
 				this.move();
 			} else {
-				let setFlag = value === 'set' || value === 'set_var';
+				let setFlag = current.is(TokenType.Identifier, ['set', 'set_var']);
 				do {
 					const thisArg = this.doLevelSemicolon();
 					if (setFlag) {
@@ -363,7 +383,12 @@ export class Parser {
 							thisArg.type = TokenType.Identifier;
 							thisArg.value = thisArg.value.toLowerCase();
 							this.throwInternal(thisArg);
-							this.locals.add(thisArg.value);
+							this.locals.set(thisArg.value, thisArg);
+						} else if (thisArg) {
+							this.throwToken(
+								thisArg,
+								'First argument of set/set_var must be string literal instead of',
+							);
 						}
 					}
 				} while (this.is(TokenType.Comma));
@@ -384,11 +409,11 @@ export class Parser {
 		switch (type) {
 			case TokenType.Identifier:
 				if (this.dialect.disabled?.includes(value)) {
-					this.throw('use of disabled', true);
+					this.throw('Use of disabled');
 				} else if (this.dialect.deprecated?.includes(value)) {
-					this.throw('use of deprecated', true, 'warning');
+					this.throw('Use of deprecated', true, 'warning');
 				} else if (this.dialect.functions?.includes(value) || this.isKeyword(value)) {
-					this.throw('incorrect use of internal', true);
+					this.throw('Incorrect use of internal');
 				} else if (this.dialect.variables?.includes(value) === false) {
 					this.throwUndefined();
 				}
@@ -401,7 +426,7 @@ export class Parser {
 				if (valueKeywords.has(value)) {
 					break;
 				}
-				this.throw('unrecognized');
+				this.throw('Unrecognized', false);
 				// no fall through
 			case TokenType.SquareBracket:
 				if (value === '[') {
@@ -425,7 +450,7 @@ export class Parser {
 				this.throwUnexpectedToken();
 		}
 		this.move();
-		return type === TokenType.StringLiteral ? current : null;
+		return type === TokenType.SquareBracket ? null : current;
 	}
 
 	/**
@@ -452,14 +477,24 @@ export class Parser {
 	}
 
 	/**
+	 * Throws an exception stating a given token.
+	 * @param token
+	 * @param message
+	 * @param severity
+	 */
+	private throwToken(token: Token, message: string, severity?: 'error' | 'warning'): void {
+		this.diagnostics.push(this.getException(token, message, severity));
+	}
+
+	/**
 	 * Throws an exception stating the current token.
 	 * @param message
 	 * @param quiet Whether to suppress the error.
 	 * @param severity
 	 */
-	private throw(message: string, quiet?: false): never;
-	private throw(message: string, quiet: true, severity?: 'error' | 'warning'): void;
-	private throw(message: string, quiet = false, severity?: 'error' | 'warning'): void {
+	private throw(message: string, quiet: false): never;
+	private throw(message: string, quiet?: true, severity?: 'error' | 'warning'): void;
+	private throw(message: string, quiet = true, severity?: 'error' | 'warning'): void {
 		const error = this.getException(this.current, message, severity, quiet);
 		if (!quiet) {
 			throw error;
@@ -471,7 +506,7 @@ export class Parser {
 	 * Throws an exception stating that the found token was not expected
 	 */
 	private throwUnexpectedToken(): never {
-		this.throw('unexpected');
+		this.throw('Unexpected', false);
 	}
 
 	/**
@@ -479,7 +514,7 @@ export class Parser {
 	 * @param expected The expected token.
 	 */
 	private throwExpectedNotFound(expected: string): never {
-		this.throw(`expected "${expected}" instead of`);
+		this.throw(`Expected "${expected}" instead of`, false);
 	}
 
 	/**
@@ -496,7 +531,7 @@ export class Parser {
 			|| disabled?.includes(value)
 			|| this.isKeyword(value)
 		) {
-			this.diagnostics.push(this.getException(token, 'assign to internal'));
+			this.throwToken(token, 'Assign to internal');
 			return true;
 		}
 		return false;
@@ -509,9 +544,10 @@ export class Parser {
 	private throwUndefined(token = this.current): boolean {
 		const {value} = token;
 		if (!this.locals.has(value)) {
-			this.diagnostics.push(this.getException(token, 'undefined local', 'warning'));
+			this.throwToken(token, 'Undefined local', 'warning');
 			return true;
 		}
+		this.usedLocals.add(value);
 		return false;
 	}
 }
