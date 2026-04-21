@@ -1,3 +1,4 @@
+/** Site-specific information about built-in keywords, variables and functions for AbuseFilter. */
 export interface Dialect {
 	functions?: string[];
 	variables?: string[];

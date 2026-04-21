@@ -6,6 +6,8 @@
 **Added**
 
 - The [lint source](./README.md#lint-source) now reports errors of unused local variables, invalid first arguments of the `set` and `set_var` functions, missing arguments of function calls, and negative array indices
+- [Hover tooltips](./README.md#hover-tooltips) for built-in variables and functions
+- JSDoc annotations for exported functions
 
 ## 0.2.0
 

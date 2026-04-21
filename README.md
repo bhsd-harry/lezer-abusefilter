@@ -46,5 +46,34 @@ This package also provides a [lint source](https://codemirror.net/docs/ref/#lint
 Extension:AbuseFilter also provides an [API endpoint](https://www.mediawiki.org/w/api.php?action=help&modules=abusefilterchecksyntax) for syntax checking, but it requires permission to access and the error messages are sometimes not very informative. However, it can provide full linting of PCRE regular expressions, which is not perfectly supported by [AbuseFilter analyzer](https://github.com/marcinszwarc/abusefilter-analyzer?tab=readme-ov-file#known-limitations).
 
 ```ts
+import {linter} from '@codemirror/lint';
 import {analyzer} from '@bhsd/lezer-abusefilter';
+import type {Extension} from '@codemirror/state';
+
+const extension: Extension = linter(analyzer);
+```
+
+## Hover Tooltips
+
+This package also provides hover tooltips for built-in variables and functions, with descriptions from [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter).
+
+```ts
+import {getDefaultHoverTooltip} from '@bhsd/lezer-abusefilter';
+import type {Extension} from '@codemirror/state';
+
+const extension: Extension = getDefaultHoverTooltip();
+```
+
+You can also customize the tooltip content by providing your own descriptions.
+
+```ts
+import {getHoverTooltip} from '@bhsd/lezer-abusefilter';
+import type {Extension} from '@codemirror/state';
+
+const hoverInfo = new Map([
+	['in', 'Contained in string'],
+	['contains', 'Left string contains right string'],
+	// ...
+]);
+const extension: Extension = getHoverTooltip(hoverInfo);
 ```

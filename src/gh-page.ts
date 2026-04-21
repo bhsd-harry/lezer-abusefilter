@@ -11,19 +11,20 @@ import {defaultKeymap, history as historyExtension, historyKeymap, indentWithTab
 import {closeBrackets, autocompletion, acceptCompletion} from '@codemirror/autocomplete';
 import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter} from '@codemirror/lint';
-import {abusefilter, analyzer} from './index';
+import {abusefilter, analyzer, getDefaultHoverTooltip} from './index';
 import {data} from './tokens';
 import dialect from './dialect.test';
 
 const container = document.getElementById('wpTextbox')!,
 	extensions = [
 		abusefilter(dialect),
+		linter(analyzer),
+		getDefaultHoverTooltip(),
 		syntaxHighlighting(defaultHighlightStyle),
 		bracketMatching({brackets: '()[]'}),
 		closeBrackets(),
 		autocompletion(),
 		foldGutter(),
-		linter(analyzer),
 		lintGutter(),
 		indentOnInput(),
 		EditorView.lineWrapping,
