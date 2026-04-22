@@ -19,6 +19,7 @@ export const data: Required<Dialect> = {
 	deprecated: [],
 	disabled: [],
 	keywords: [],
+	hoverInfo: new Map(),
 };
 
 const ch = {

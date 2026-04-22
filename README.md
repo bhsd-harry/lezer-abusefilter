@@ -28,6 +28,11 @@ const langSupport: LanguageSupport = abusefilter({
 	variables: [],
 	deprecated: [], // List of deprecated variables
 	disabled: [], // List of disabled functions
+	hoverInfo: new Map([ // Map of keywords/functions/variables to their descriptions
+		['in', 'Contained in string'],
+		['contains', 'Left string contains right string'],
+		// ...
+	]),
 });
 ```
 
@@ -55,7 +60,7 @@ const extension: Extension = linter(analyzer);
 
 ## Hover Tooltips
 
-This package also provides hover tooltips for built-in variables and functions, with descriptions from [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter).
+This package also provides hover tooltips for built-in variables and functions, with descriptions from [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter). This extension is automatically included in the [language support](#language-support) if the `hoverInfo` field is provided.
 
 ```ts
 import {getDefaultHoverTooltip} from '@bhsd/lezer-abusefilter';

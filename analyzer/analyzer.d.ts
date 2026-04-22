@@ -5,6 +5,7 @@ export interface Dialect {
 	deprecated?: string[];
 	disabled?: string[];
 	keywords?: string[];
+	hoverInfo?: Map<string, string>;
 }
 
 export const conditionKeywords: Set<string>;

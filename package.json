@@ -47,7 +47,8 @@
 	},
 	"dependencies": {
 		"@codemirror/language": "^6.12.3",
-		"@codemirror/lint": "^6.9.5"
+		"@codemirror/lint": "^6.9.5",
+		"@codemirror/state": "^6.6.0"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^2.2.0",
@@ -56,7 +57,6 @@
 		"@codemirror/autocomplete": "^6.20.1",
 		"@codemirror/commands": "^6.10.3",
 		"@codemirror/search": "^6.6.0",
-		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.41.0",
 		"@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",
 		"@lezer/generator": "^1.8.0",
