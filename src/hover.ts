@@ -4,7 +4,7 @@ import {data, updateData} from './tokens.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 
-const hoverTokens = new Set(['GlobalVar', 'Func', 'Rel']);
+const hoverTokens = new Set(['VarName', 'GlobalVar', 'Func', 'Rel']);
 
 /**
  * Get hover tooltip extension for AbuseFilter.
@@ -27,7 +27,6 @@ export const getHoverTooltip = (hoverInfo?: Map<string, string>, className?: str
 				? {
 					pos,
 					end: to,
-					above: true,
 					create(): TooltipView {
 						const dom = document.createElement('div');
 						dom.textContent = info;

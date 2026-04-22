@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/lezer-abusefilter",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "Lezer parser for MediaWiki extension AbuseFilter",
 	"keywords": [
 		"mediawiki",
@@ -73,7 +73,7 @@
 		"eslint-plugin-regexp": "^3.1.0",
 		"eslint-plugin-unicorn": "^64.0.0",
 		"http-server": "^14.1.1",
-		"markdownlint-cli2": "~0.21.0",
+		"markdownlint-cli2": "^0.22.1",
 		"mocha": "^11.7.5",
 		"typescript": "^6.0.3"
 	},

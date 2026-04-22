@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.3.1
+
+*2026-04-23*
+
+**Fixed**
+
+- [Hover tooltips](./README.md#hover-tooltips) were not shown for built-in variables and functions in some cases
+
 ## 0.3.0
 
 *2026-04-22*
