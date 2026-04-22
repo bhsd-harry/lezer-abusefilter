@@ -24,7 +24,7 @@ updateData(dialect);
 
 const failures = new Map<string, number>();
 
-const notDeprecation = (e: Error): boolean => !e.message.startsWith('use of deprecated ');
+const notDeprecation = (e: Error): boolean => !e.message.startsWith('Use of deprecated ');
 
 const getFilters = async (url: string): Promise<Required<AbuseFilter>[]> => {
 	const qs = {

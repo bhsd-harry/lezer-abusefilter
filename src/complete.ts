@@ -4,11 +4,16 @@ import type {Text} from '@codemirror/state'; // eslint-disable-line @typescript-
 import type {CompletionContext, CompletionResult, Completion} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
 
+const getCompletionWithInfo = (words: string[], type: string, withInfo = true): Completion[] =>
+	words.map((label): Completion => {
+		const info = withInfo && data.hoverInfo.get(label);
+		return {label, type, ...info && {info}};
+	});
 const getVarAndFunc = (): Completion[] => [
-	...data.variables.map((label): Completion => ({label, type: 'constant'})),
-	...data.functions.map((label): Completion => ({label, type: 'function'})),
+	...getCompletionWithInfo(data.variables, 'constant'),
+	...getCompletionWithInfo(data.functions, 'function'),
 ];
-const getKeywords = (words: string[]): Completion[] => words.map((label): Completion => ({label, type: 'keyword'}));
+const getKeywords = (words: string[]): Completion[] => getCompletionWithInfo(words, 'keyword');
 const constants = getKeywords([...startKeywords]),
 	keywords = new Set(['if', 'then', 'else']);
 
@@ -55,10 +60,7 @@ export const autocomplete = ({state, pos}: CompletionContext): CompletionResult 
 				options: [
 					...constants,
 					...getVarAndFunc(),
-					...[...getScope(state.doc, tree.topNode)].map((label): Completion => ({
-						label,
-						type: 'variable',
-					})),
+					...getCompletionWithInfo([...getScope(state.doc, tree.topNode)], 'variable', false),
 				],
 				validFor: /^\w*$/u,
 			};

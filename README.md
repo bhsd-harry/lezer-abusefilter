@@ -62,11 +62,21 @@ const extension: Extension = linter(analyzer);
 
 This package also provides hover tooltips for built-in variables and functions, with descriptions from [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter). This extension is automatically included in the [language support](#language-support) if the `hoverInfo` field is provided.
 
+The tooltips are unstyled by default, so you may want to add your own styles for a custom CSS class.
+
 ```ts
+import {EditorView} from '@codemirror/view';
 import {getDefaultHoverTooltip} from '@bhsd/lezer-abusefilter';
 import type {Extension} from '@codemirror/state';
 
-const extension: Extension = getDefaultHoverTooltip();
+const extension: Extension = [
+	getDefaultHoverTooltip('my-hover-tooltip'),
+	EditorView.theme({
+		'.my-hover-tooltip': {
+			padding: '2px 5px',
+		},
+	}),
+];
 ```
 
 You can also customize the tooltip content by providing your own descriptions.
@@ -80,5 +90,5 @@ const hoverInfo = new Map([
 	['contains', 'Left string contains right string'],
 	// ...
 ]);
-const extension: Extension = getHoverTooltip(hoverInfo);
+const extension: Extension = getHoverTooltip(hoverInfo, 'my-hover-tooltip');
 ```

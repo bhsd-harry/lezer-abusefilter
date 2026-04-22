@@ -38,6 +38,15 @@ article {
 	border: 1.5px solid #dedede;
 	margin-top: .5em;
 }
+.cm-editor .cm-textfield,
+.cm-editor .cm-button,
+.cm-editor .cm-panel.cm-search label,
+.cm-editor .cm-panel.cm-dialog label {
+	font-size: inherit;
+}
+.cm-tooltip-hover {
+	padding: 2px 5px;
+}
 #footer {
 	margin-top: .5rem;
 }
