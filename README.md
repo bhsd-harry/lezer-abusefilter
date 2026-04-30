@@ -4,7 +4,7 @@
 [![CodeQL](https://github.com/bhsd-harry/lezer-abusefilter/actions/workflows/codeql.yml/badge.svg)](https://github.com/bhsd-harry/lezer-abusefilter/actions/workflows/codeql.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/17892ba88e5a4e689d0266424689bc92)](https://app.codacy.com/gh/bhsd-harry/lezer-abusefilter/dashboard)
 
-This repository contains [CodeMirror 6](https://codemirror.net/6/) language support for [MediaWiki AbuseFilter syntax](https://www.mediawiki.org/wiki/Extension:AbuseFilter/Rules_format). Here is an online [demo](https://bhsd-harry.github.io/lezer-abusefilter/), with syntax highlighting, indentation, autocompletion, and code folding.
+This repository contains [CodeMirror 6](https://codemirror.net/6/) language support for [MediaWiki AbuseFilter syntax](https://www.mediawiki.org/wiki/Extension:AbuseFilter/Rules_format). Here is an online [demo](https://bhsd-harry.github.io/codemirror-mediawiki/#Abusefilter), with syntax highlighting, indentation, autocompletion, code folding, hover tooltips and linting.
 
 ## Installation
 

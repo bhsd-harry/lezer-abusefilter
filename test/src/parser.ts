@@ -1,6 +1,6 @@
 import {abusefilterLanguage} from '../../dist/index.js';
 import {updateData} from '../../dist/tokens.js';
-import dialect from '../../dist/dialect.test.js';
+import dialect from './dialect.js';
 import type {SyntaxNode} from '@lezer/common';
 
 export interface ObjNode {

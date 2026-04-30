@@ -1,6 +1,6 @@
 import analyze from '../../analyzer/analyzer.js';
 import {data, updateData} from '../../dist/tokens.js';
-import dialect from '../../dist/dialect.test.js';
+import dialect from './dialect.js';
 import tests from '../parserTests.json' with {type: 'json'};
 import type {ParserException} from '../../analyzer/analyzer';
 

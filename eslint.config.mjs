@@ -21,11 +21,6 @@ export default [
 	},
 	{
 		files: ['analyzer/**/*.ts'],
-		languageOptions: {
-			parserOptions: {
-				project: './analyzer/tsconfig.json',
-			},
-		},
 		rules: {
 			'jsdoc/check-indentation': 0,
 			'jsdoc/check-param-names': 0,
@@ -38,11 +33,6 @@ export default [
 	},
 	{
 		files: ['test/**/*.ts'],
-		languageOptions: {
-			parserOptions: {
-				project: './test/tsconfig.json',
-			},
-		},
 		rules: {
 			'es-x/no-regexp-lookbehind-assertions': 0,
 		},

@@ -5,7 +5,7 @@ import {refreshStdout} from '@bhsd/nodejs';
 import parse from './parser.js';
 import analyze from '../../analyzer/analyzer.js';
 import {data, updateData} from '../../dist/tokens.js';
-import dialect from '../../dist/dialect.test.js';
+import dialect from './dialect.js';
 import packageJson from '../../package.json' with {type: 'json'};
 import type {ParserException} from '../../analyzer/analyzer';
 
