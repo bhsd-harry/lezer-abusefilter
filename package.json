@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/lezer-abusefilter",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"description": "Lezer parser for MediaWiki extension AbuseFilter",
 	"keywords": [
 		"mediawiki",
@@ -14,8 +14,6 @@
 	"author": "Bhsd",
 	"files": [
 		"dist/",
-		"!dist/*.test.*",
-		"!dist/gh-page.*",
 		"analyzer/analyzer.*",
 		"analyzer/ThirdPartyNotices"
 	],
@@ -34,17 +32,13 @@
 		"build:analyzer": "esbuild analyzer/index.ts --charset=utf8 --target=es2017 --bundle --format=esm --outfile=analyzer/analyzer.js && gsed -i '/^\\/\\/ /d' analyzer/analyzer.js && cp analyzer/analyzer.js build/",
 		"build:parser": "lezer-generator src/abusefilter.grammar -o src/parser.js",
 		"build:core": "tsc && cp src/parser.*js dist/",
-		"build:gh-page": "esbuild src/gh-page.ts --charset=utf8 --bundle --format=esm --outdir=build && esbuild src/gh-page.ts --charset=utf8 --target=es2019 --bundle --format=esm --minify --sourcemap --outdir=.",
 		"build:test": "rm -rf test/dist/; tsc --project test/tsconfig.json && npm test",
 		"build": "npm run build:parser && npm run build:analyzer && npm run build:core",
 		"lint:ts": "tsc --noEmit && tsc --project analyzer/tsconfig.json && tsc --project test/tsconfig.json --noEmit && eslint --cache .",
-		"lint:css": "stylelint *.css",
 		"lint:md": "markdownlint-cli2 '**/*.md'",
-		"lint": "npm run lint:ts && npm run lint:css && npm run lint:md",
-		"server": "npm run test:end; http-server .. -c-1 --cors -s &",
+		"lint": "npm run lint:ts && npm run lint:md",
 		"test": "mocha test/dist/test.js && mocha test/dist/analyzer.test.js",
-		"test:real": "node test/dist/real.js",
-		"test:end": "pkill -x http-server"
+		"test:real": "node test/dist/real.js"
 	},
 	"dependencies": {
 		"@codemirror/language": "^6.12.3",
@@ -52,8 +46,8 @@
 		"@codemirror/state": "^6.6.0"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.4.2",
-		"@bhsd/nodejs": "^1.0.0",
+		"@bhsd/code-standard": "^2.5.0",
+		"@bhsd/nodejs": "^1.0.1",
 		"@bhsd/test-util": "^1.3.1",
 		"@codemirror/autocomplete": "^6.20.2",
 		"@codemirror/commands": "^6.10.3",
@@ -61,14 +55,11 @@
 		"@codemirror/view": "^6.42.1",
 		"@lezer/generator": "^1.8.0",
 		"@types/mocha": "^10.0.10",
-		"@typescript-eslint/parser": "^8.59.2",
+		"@typescript-eslint/parser": "^8.59.4",
 		"esbuild": "^0.28.0",
-		"eslint": "^10.3.0",
-		"eslint-plugin-es-x": "^9.6.0",
-		"http-server": "^14.1.1",
+		"eslint": "^10.4.0",
 		"markdownlint-cli2": "^0.22.1",
 		"mocha": "^11.7.5",
-		"stylelint": "^17.11.0",
 		"typescript": "^6.0.3"
 	}
 }

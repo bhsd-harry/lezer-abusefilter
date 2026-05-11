@@ -1,5 +1,4 @@
-import config, {browser} from '@bhsd/code-standard';
-import esX from 'eslint-plugin-es-x';
+import config, {browser, browserES8} from '@bhsd/code-standard';
 
 export default [
 	{
@@ -9,15 +8,7 @@ export default [
 	browser,
 	{
 		files: ['src/*.ts'],
-		...esX.configs['flat/restrict-to-es2017'],
-	},
-	{
-		files: ['src/*.ts'],
-		rules: {
-			'es-x/no-logical-assignment-operators': 0,
-			'es-x/no-optional-chaining': 0,
-			'es-x/no-rest-spread-properties': 0,
-		},
+		rules: browserES8.rules,
 	},
 	{
 		files: ['analyzer/**/*.ts'],
