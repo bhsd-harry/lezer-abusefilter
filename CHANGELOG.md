@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.4.0
+
+*2026-06-01*
+
+**Changed**
+
+- [CodeMirror 6](https://codemirror.net/) packages are now peer dependencies
+
 ## 0.3.2
 
 *2026-05-20*

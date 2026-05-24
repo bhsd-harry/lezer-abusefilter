@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/lezer-abusefilter",
-	"version": "0.3.2",
+	"version": "0.4.0",
 	"description": "Lezer parser for MediaWiki extension AbuseFilter",
 	"keywords": [
 		"mediawiki",
@@ -34,32 +34,40 @@
 		"build:core": "tsc && cp src/parser.*js dist/",
 		"build:test": "rm -rf test/dist/; tsc --project test/tsconfig.json && npm test",
 		"build": "npm run build:parser && npm run build:analyzer && npm run build:core",
-		"lint:ts": "tsc --noEmit && tsc --project analyzer/tsconfig.json && tsc --project test/tsconfig.json --noEmit && eslint --cache .",
+		"lint:ts": "tsc --noEmit && tsc --project analyzer/tsconfig.json && tsc --project test/tsconfig.json --noEmit && eslint --cache . && eslint --no-config-lookup -c eslint.dist.mjs --no-inline-config dist/*.js",
 		"lint:md": "markdownlint-cli2 '**/*.md'",
 		"lint": "npm run lint:ts && npm run lint:md",
 		"test": "mocha test/dist/test.js && mocha test/dist/analyzer.test.js",
 		"test:real": "node test/dist/real.js"
 	},
-	"dependencies": {
-		"@codemirror/language": "^6.12.3",
-		"@codemirror/lint": "^6.9.6",
-		"@codemirror/state": "^6.6.0"
+	"peerDependencies": {
+		"@codemirror/language": "^6.0.0",
+		"@codemirror/lint": "^6.0.0",
+		"@codemirror/state": "^6.0.0",
+		"@codemirror/view": "^6.0.0"
+	},
+	"peerDependenciesMeta": {
+		"@codemirror/lint": {
+			"optional": true
+		},
+		"@codemirror/state": {
+			"optional": true
+		}
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.5.0",
+		"@bhsd/code-standard": "^2.6.2",
 		"@bhsd/nodejs": "^1.0.1",
-		"@bhsd/test-util": "^1.3.1",
+		"@bhsd/test-util": "^1.5.0",
 		"@codemirror/autocomplete": "^6.20.2",
-		"@codemirror/commands": "^6.10.3",
-		"@codemirror/search": "^6.7.0",
+		"@codemirror/language": "^6.12.3",
+		"@codemirror/lint": "^6.9.6",
+		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.42.1",
 		"@lezer/generator": "^1.8.0",
-		"@types/mocha": "^10.0.10",
-		"@typescript-eslint/parser": "^8.59.4",
 		"esbuild": "^0.28.0",
-		"eslint": "^10.4.0",
+		"eslint": "^10.4.1",
 		"markdownlint-cli2": "^0.22.1",
-		"mocha": "^11.7.5",
+		"mocha": "^11.7.6",
 		"typescript": "^6.0.3"
 	}
 }
