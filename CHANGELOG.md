@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.4.1
+
+*2026-06-12*
+
+**Changed**
+
+- [Hover tooltips](./README.md#hover-tooltips) are now displayed above the hovered tokens
+
 ## 0.4.0
 
 *2026-06-01*

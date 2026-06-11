@@ -27,6 +27,7 @@ export const getHoverTooltip = (hoverInfo?: Map<string, string>, className?: str
 				? {
 					pos,
 					end: to,
+					above: true,
 					create(): TooltipView {
 						const dom = document.createElement('div');
 						dom.textContent = info;
