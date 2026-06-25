@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as assert from 'assert';
+import {describe, it, after} from '@bhsd/test-util/mocha';
 import parse from './parser.js';
 import tests from '../parserTests.json' with {type: 'json'};
 import type {ObjNode} from './parser';

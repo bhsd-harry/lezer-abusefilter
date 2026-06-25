@@ -1,3 +1,4 @@
+import {describe, it} from '@bhsd/test-util/mocha';
 import analyze from '../../analyzer/analyzer.js';
 import {data, updateData} from '../../dist/tokens.js';
 import dialect from './dialect.js';
