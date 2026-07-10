@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/lezer-abusefilter",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"description": "Lezer parser for MediaWiki extension AbuseFilter",
 	"keywords": [
 		"mediawiki",
@@ -57,7 +57,7 @@
 	"devDependencies": {
 		"@bhsd/code-standard": "^3.1.0",
 		"@bhsd/nodejs": "^1.2.0",
-		"@bhsd/test-util": "^3.0.0",
+		"@bhsd/test-util": "^3.1.0",
 		"@codemirror/autocomplete": "^6.20.3",
 		"@codemirror/language": "^6.12.4",
 		"@codemirror/lint": "^6.9.7",

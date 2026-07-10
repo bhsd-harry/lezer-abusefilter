@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.4.2
+
+*2026-07-10*
+
+**Changed**
+
+- Default [hover tooltips](./README.md#hover-tooltips) are shortened
+
 ## 0.4.1
 
 *2026-06-12*
