@@ -1,7 +1,11 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 0.4.2
+## 0.5.0
 
 *2026-07-12*
+
+**Added**
+
+- [Signature help](./README.md#signature-help) for built-in functions
 
 **Fixed**
 

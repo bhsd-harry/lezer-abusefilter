@@ -55,6 +55,7 @@
 		}
 	},
 	"dependencies": {
+		"@bhsd/browser": "^1.0.0",
 		"@bhsd/cm-util": "^2.2.0"
 	},
 	"devDependencies": {

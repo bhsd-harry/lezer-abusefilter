@@ -92,3 +92,24 @@ const hoverInfo = new Map([
 ]);
 const extension: Extension = getHoverTooltip(hoverInfo, 'my-hover-tooltip');
 ```
+
+## Signature Help
+
+This package also provides signature help for built-in functions from [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter). This extension is automatically included in the [language support](#language-support) if the `hoverInfo` field is provided.
+
+The tooltips are unstyled by default, so you may want to add your own styles for a custom CSS class.
+
+```ts
+import {EditorView} from '@codemirror/view';
+import {getSignatureHelp} from '@bhsd/lezer-abusefilter';
+import type {Extension} from '@codemirror/state';
+
+const extension: Extension = [
+	getSignatureHelp('my-signature-tooltip'),
+	EditorView.theme({
+		'.my-signature-tooltip': {
+			padding: '2px 5px',
+		},
+	}),
+];
+```
