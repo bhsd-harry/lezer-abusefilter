@@ -1,7 +1,11 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 0.4.2
 
-*2026-07-10*
+*2026-07-11*
+
+**Fixed**
+
+- Duplicate [hover tooltips](./README.md#hover-tooltips) if `getHoverTooltip()` is called multiple times
 
 **Changed**
 

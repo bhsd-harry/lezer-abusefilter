@@ -1,44 +1,52 @@
 import {hoverTooltip} from '@codemirror/view';
 import {syntaxTree} from '@codemirror/language';
+import {Facet} from '@codemirror/state';
+import {createTooltipView} from '@bhsd/cm-util/cm';
 import {data, updateData} from './tokens.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 
-const hoverTokens = new Set(['VarName', 'GlobalVar', 'Func', 'Rel']);
+const hoverTokens = new Set(['VarName', 'GlobalVar', 'Func', 'Rel']),
+	hoverFacet = Facet.define<string, string>({
+		combine(values) {
+			return values[values.length - 1] || '';
+		},
+		enables(facet) {
+			return hoverTooltip((view, pos, side): Tooltip | null => {
+				const {hoverInfo} = data;
+				if (hoverInfo.size === 0) {
+					return null;
+				}
+				const {state} = view,
+					{name: n, from, to} = syntaxTree(state).resolveInner(pos, side);
+				if (!hoverTokens.has(n)) {
+					return null;
+				}
+				const info = hoverInfo.get(state.sliceDoc(from, to));
+				return info
+					? {
+						pos,
+						end: to,
+						above: true,
+						create(): TooltipView {
+							return createTooltipView(view, info, state.facet(facet), true);
+						},
+					}
+					: null;
+			});
+		},
+	});
 
 /**
  * Get hover tooltip extension for AbuseFilter.
  * @param hoverInfo Map of built-in keywords, variables and functions to their descriptions
  * @param className Optional class name for the tooltip DOM element
  */
-export const getHoverTooltip = (hoverInfo?: Map<string, string>, className?: string): Extension => {
+export const getHoverTooltip = (hoverInfo?: Map<string, string>, className = ''): Extension => {
 	if (hoverInfo) {
 		updateData({hoverInfo});
 	}
-	return data.hoverInfo.size === 0
-		? []
-		: hoverTooltip(({state}, pos, side): Tooltip | null => {
-			const {name: n, from, to} = syntaxTree(state).resolveInner(pos, side);
-			if (!hoverTokens.has(n)) {
-				return null;
-			}
-			const info = data.hoverInfo.get(state.sliceDoc(from, to));
-			return info
-				? {
-					pos,
-					end: to,
-					above: true,
-					create(): TooltipView {
-						const dom = document.createElement('div');
-						dom.textContent = info;
-						if (className) {
-							dom.className = className;
-						}
-						return {dom};
-					},
-				}
-				: null;
-		});
+	return hoverFacet.of(className);
 };
 
 const hoverInfo = new Map([
