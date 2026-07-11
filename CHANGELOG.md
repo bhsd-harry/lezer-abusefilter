@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 0.4.2
 
-*2026-07-11*
+*2026-07-12*
 
 **Fixed**
 
 - Duplicate [hover tooltips](./README.md#hover-tooltips) if `getHoverTooltip()` is called multiple times
+- Built-in variables are case-insensitive while functions are case-sensitive
 
 **Changed**
 

@@ -95,12 +95,15 @@ export const tokens = new ExternalTokenizer(input => {
 		// There may be spaces between function name and "("
 		if (input.next === ch.LPar) {
 			input.acceptToken(data.functions.includes(word) ? Func : Callee, offset);
-		} else if (data.disabled.includes(word)) {
-			input.acceptToken(DisabledVar, offset);
-		} else if (data.deprecated.includes(word)) {
-			input.acceptToken(DeprecatedVar, offset);
 		} else {
-			input.acceptToken(data.variables.includes(word) ? GlobalVar : VarName, offset);
+			word = word.toLowerCase();
+			if (data.disabled.includes(word)) {
+				input.acceptToken(DisabledVar, offset);
+			} else if (data.deprecated.includes(word)) {
+				input.acceptToken(DeprecatedVar, offset);
+			} else {
+				input.acceptToken(data.variables.includes(word) ? GlobalVar : VarName, offset);
+			}
 		}
 	}
 });
