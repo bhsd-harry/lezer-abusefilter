@@ -79,7 +79,7 @@ const extension: Extension = [
 ];
 ```
 
-You can also customize the tooltip content by providing your own descriptions.
+You can also customize the tooltip content by providing your own descriptions. Note that the `hoverInfo` parameter is shared with the [signature help](#signature-help) extension.
 
 ```ts
 import {getHoverTooltip} from '@bhsd/lezer-abusefilter';
@@ -101,15 +101,29 @@ The tooltips are unstyled by default, so you may want to add your own styles for
 
 ```ts
 import {EditorView} from '@codemirror/view';
-import {getSignatureHelp} from '@bhsd/lezer-abusefilter';
+import {getDefaultSignatureHelp} from '@bhsd/lezer-abusefilter';
 import type {Extension} from '@codemirror/state';
 
 const extension: Extension = [
-	getSignatureHelp('my-signature-tooltip'),
+	getDefaultSignatureHelp('my-signature-tooltip'),
 	EditorView.theme({
 		'.my-signature-tooltip': {
 			padding: '2px 5px',
 		},
 	}),
 ];
+```
+
+You can also customize the tooltip content by providing your own descriptions. Note that the `hoverInfo` parameter is shared with the [hover](#hover-tooltips) extension.
+
+```ts
+import {getSignatureHelp} from '@bhsd/lezer-abusefilter';
+import type {Extension} from '@codemirror/state';
+
+const hoverInfo = new Map([
+	['length', 'String length (length(string))'],
+	['count', 'Number of times string X appears in string Y (count(needle, haystack))'],
+	// ...
+]);
+const extension: Extension = getSignatureHelp(hoverInfo, 'my-signature-tooltip'),
 ```

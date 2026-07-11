@@ -1,8 +1,8 @@
 import {syntaxTree} from '@codemirror/language';
 import {escHTML} from '@bhsd/browser';
 import {getSignatureHelpExtension} from '@bhsd/cm-util/cm';
-import {data} from './tokens.js';
-import {unique} from './util.js';
+import {data, updateData} from './tokens.js';
+import {unique, defaultHoverInfo} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 
@@ -19,7 +19,10 @@ const signatureFacet = unique(facet => getSignatureHelpExtension<SignatureHelp>(
 		if (hoverInfo.size === 0) {
 			return undefined;
 		}
-		let node: SyntaxNode | null = syntaxTree(state).resolve(cursor, 0);
+		let node: SyntaxNode | null = syntaxTree(state).resolveInner(cursor, -1);
+		if (node.name === ')') {
+			return undefined;
+		}
 		while (node && node.name !== 'ArgList') {
 			node = node.parent;
 		}
@@ -53,13 +56,31 @@ const signatureFacet = unique(facet => getSignatureHelpExtension<SignatureHelp>(
 		};
 	},
 	render({f, signatures, active}) {
+		const signature = signatures[0]!,
+			l = signature.length;
 		return `${f}(${
 			signatures[0]!.map((s, i) => {
 				const str = escHTML(s);
-				return i === active ? `<b>${str}</b>` : str;
+				return i === active || i === l - 1 && active > i && /^\.{2,}$/u.test(s) ? `<b>${str}</b>` : str;
 			}).join(', ')
 		})`;
 	},
 }));
 
-export const getSignatureHelp = (className = ''): Extension => signatureFacet.of(className);
+/**
+ * Get signature help extension for AbuseFilter.
+ * @param hoverInfo Map of built-in keywords, variables and functions to their descriptions
+ * @param className Optional class name for the tooltip DOM element
+ */
+export const getSignatureHelp = (hoverInfo?: Map<string, string>, className = ''): Extension => {
+	if (hoverInfo) {
+		updateData({hoverInfo});
+	}
+	return signatureFacet.of(className);
+};
+
+/**
+ * Get signature help extension for AbuseFilter with preset information about built-in functions.
+ * @param className Optional class name for the tooltip DOM element
+ */
+export const getDefaultSignatureHelp = (className?: string): Extension => getSignatureHelp(defaultHoverInfo, className);

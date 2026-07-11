@@ -12,11 +12,11 @@ import {parser} from './parser.js';
 import {updateData} from './tokens.js';
 import {autocomplete} from './complete.js';
 import {getHoverTooltip, getDefaultHoverTooltip} from './hover.js';
-import {getSignatureHelp} from './signature.js';
+import {getSignatureHelp, getDefaultSignatureHelp} from './signature.js';
 import type {Dialect} from '../analyzer/analyzer';
 
 export {analyzer} from './analyzer.js';
-export {getHoverTooltip, getDefaultHoverTooltip, getSignatureHelp};
+export {getHoverTooltip, getDefaultHoverTooltip, getSignatureHelp, getDefaultSignatureHelp};
 export type {Dialect};
 
 /** LR language for AbuseFilter. */
