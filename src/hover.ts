@@ -1,41 +1,34 @@
 import {hoverTooltip} from '@codemirror/view';
 import {syntaxTree} from '@codemirror/language';
-import {Facet} from '@codemirror/state';
 import {createTooltipView} from '@bhsd/cm-util/cm';
 import {data, updateData} from './tokens.js';
+import {unique} from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 
 const hoverTokens = new Set(['VarName', 'GlobalVar', 'Func', 'Rel']),
-	hoverFacet = Facet.define<string, string>({
-		combine(values) {
-			return values[values.length - 1] || '';
-		},
-		enables(facet) {
-			return hoverTooltip((view, pos, side): Tooltip | null => {
-				const {hoverInfo} = data;
-				if (hoverInfo.size === 0) {
-					return null;
-				}
-				const {state} = view,
-					{name: n, from, to} = syntaxTree(state).resolveInner(pos, side);
-				if (!hoverTokens.has(n)) {
-					return null;
-				}
-				const info = hoverInfo.get(state.sliceDoc(from, to));
-				return info
-					? {
-						pos,
-						end: to,
-						above: true,
-						create(): TooltipView {
-							return createTooltipView(view, info, state.facet(facet), true);
-						},
-					}
-					: null;
-			});
-		},
-	});
+	hoverFacet = unique(facet => hoverTooltip((view, pos, side): Tooltip | null => {
+		const {hoverInfo} = data;
+		if (hoverInfo.size === 0) {
+			return null;
+		}
+		const {state} = view,
+			{name: n, from, to} = syntaxTree(state).resolveInner(pos, side);
+		if (!hoverTokens.has(n)) {
+			return null;
+		}
+		const info = hoverInfo.get(state.sliceDoc(from, to));
+		return info
+			? {
+				pos,
+				end: to,
+				above: true,
+				create(): TooltipView {
+					return createTooltipView(view, info, state.facet(facet), true);
+				},
+			}
+			: null;
+	}));
 
 /**
  * Get hover tooltip extension for AbuseFilter.

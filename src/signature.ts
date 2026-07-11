@@ -2,6 +2,7 @@ import {syntaxTree} from '@codemirror/language';
 import {escHTML} from '@bhsd/browser';
 import {getSignatureHelpExtension} from '@bhsd/cm-util/cm';
 import {data} from './tokens.js';
+import {unique} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 
@@ -11,8 +12,8 @@ declare interface SignatureHelp {
 	active: number;
 }
 
-export const getSignatureHelp = (className?: string): Extension => getSignatureHelpExtension<SignatureHelp>({
-	className,
+const signatureFacet = unique(facet => getSignatureHelpExtension<SignatureHelp>({
+	className: facet,
 	update(_, state, {cursor}) {
 		const {hoverInfo} = data;
 		if (hoverInfo.size === 0) {
@@ -59,4 +60,6 @@ export const getSignatureHelp = (className?: string): Extension => getSignatureH
 			}).join(', ')
 		})`;
 	},
-});
+}));
+
+export const getSignatureHelp = (className = ''): Extension => signatureFacet.of(className);
