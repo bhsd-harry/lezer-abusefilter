@@ -172,12 +172,9 @@ export class Tokenizer {
 		identifierRegex.lastIndex = offset;
 		const identifierMatch = identifierRegex.exec(input);
 		if (identifierMatch) {
-			let [identifier] = identifierMatch;
+			const [identifier] = identifierMatch;
 			const isKeyword = this.keywords.has(identifier);
 			const tokenType = isKeyword ? TokenType.Keyword : TokenType.Identifier;
-			if (!isKeyword) {
-				identifier = identifier.toLowerCase();
-			}
 			return new Token(tokenType, identifier, offset);
 		}
 

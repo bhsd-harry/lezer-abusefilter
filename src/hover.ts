@@ -89,12 +89,12 @@ const hoverInfo = new Map([
 	[
 		'ccnorm_contains_any',
 		'Normalize and search a string for multiple substrings in OR mode'
-		+ ' (ccnorm_contains_any(haystack,needle1,needle2,..))',
+		+ ' (ccnorm_contains_any(haystack, needle1, needle2, ...))',
 	],
 	[
 		'ccnorm_contains_all',
 		'Normalize and search a string for multiple substrings in AND mode'
-		+ ' (ccnorm_contains_all(haystack,needle1,needle2,..))',
+		+ ' (ccnorm_contains_all(haystack, needle1, needle2, ...))',
 	],
 	[
 		'rmdoubles',
@@ -110,15 +110,15 @@ const hoverInfo = new Map([
 	],
 	[
 		'count',
-		'Number of times string X appears in string Y (count(needle,haystack))',
+		'Number of times string X appears in string Y (count(needle, haystack))',
 	],
 	[
 		'rcount',
-		'Number of times regex X appears in string Y (rcount(needle,haystack))',
+		'Number of times regex X appears in string Y (rcount(needle, haystack))',
 	],
 	[
 		'get_matches',
-		'Array of regex matches within a text for each capturing group (get_matches(needle,haystack))',
+		'Array of regex matches within a text for each capturing group (get_matches(needle, haystack))',
 	],
 	[
 		'rmwhitespace',
@@ -138,16 +138,16 @@ const hoverInfo = new Map([
 	],
 	[
 		'contains_any',
-		'Search string for multiple substrings in OR mode (contains_any(haystack,needle1,needle2,...))',
+		'Search string for multiple substrings in OR mode (contains_any(haystack, needle1, needle2, ...))',
 	],
 	[
 		'contains_all',
-		'Search string for multiple substrings in AND mode (contains_all(haystack,needle1,needle2,...))',
+		'Search string for multiple substrings in AND mode (contains_all(haystack, needle1, needle2, ...))',
 	],
 	[
 		'equals_to_any',
 		'Check if a given argument is equal (===) to any of the following arguments'
-		+ ' (equals_to_any(haystack,needle1,needle2,...))',
+		+ ' (equals_to_any(haystack, needle1, needle2, ...))',
 	],
 	[
 		'substr',
@@ -171,7 +171,7 @@ const hoverInfo = new Map([
 	],
 	[
 		'set_var',
-		'Set variable (set_var(var,value))',
+		'Set variable (set_var(var, value))',
 	],
 	[
 		'sanitize',

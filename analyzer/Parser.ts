@@ -57,7 +57,7 @@ export class Parser {
 		this.doLevelEntry();
 		for (const [local, token] of this.locals) {
 			if (!this.usedLocals.has(local)) {
-				this.throwToken(token, 'Unused local', 'warning');
+				this.throwToken(token, 'Unused local', true, 'warning');
 			}
 		}
 		if (this.diagnostics.length > 0) {
@@ -174,7 +174,7 @@ export class Parser {
 			this.move();
 			if (this.is(TokenType.Operator, ':=')) {
 				this.throwInternal(current);
-				this.locals.set(current.value, current);
+				this.locals.set(current.value.toLowerCase(), current);
 				this.move();
 				this.doLevelSet();
 				return null;
@@ -381,9 +381,8 @@ export class Parser {
 						setFlag = false;
 						if (thisArg?.type === TokenType.StringLiteral) {
 							thisArg.type = TokenType.Identifier;
-							thisArg.value = thisArg.value.toLowerCase();
 							this.throwInternal(thisArg);
-							this.locals.set(thisArg.value, thisArg);
+							this.locals.set(thisArg.value.toLowerCase(), thisArg);
 						} else if (thisArg) {
 							this.throwToken(
 								thisArg,
@@ -405,16 +404,17 @@ export class Parser {
 	/** Handle literals. */
 	private doLevelAtom(): Token | null {
 		const {current} = this,
-			{type, value} = current;
+			{type, value} = current,
+			lc = value.toLowerCase();
 		switch (type) {
 			case TokenType.Identifier:
-				if (this.dialect.disabled?.includes(value)) {
-					this.throw('Use of disabled');
-				} else if (this.dialect.deprecated?.includes(value)) {
-					this.throw('Use of deprecated', true, 'warning');
+				if (this.dialect.disabled?.includes(lc)) {
+					this.throw('Use of disabled', true, true);
+				} else if (this.dialect.deprecated?.includes(lc)) {
+					this.throw('Use of deprecated', true, true, 'warning');
 				} else if (this.dialect.functions?.includes(value) || this.isKeyword(value)) {
 					this.throw('Incorrect use of internal');
-				} else if (this.dialect.variables?.includes(value) === false) {
+				} else if (this.dialect.variables?.includes(lc) === false) {
 					this.throwUndefined();
 				}
 				break;
@@ -457,18 +457,21 @@ export class Parser {
 	 * Prepares a ParserException for the given token.
 	 * @param token
 	 * @param message
+	 * @param lower Whether to convert the token value to lowercase.
 	 * @param severity
 	 * @param quiet Whether to suppress the error.
 	 */
 	private getException(
 		token: Token,
 		message: string,
+		lower?: boolean,
 		severity?: 'error' | 'warning',
 		quiet = true,
 	): ParserException {
-		const {type, value, start, end} = token;
+		const {type, value, start, end} = token,
+			v = lower ? value.toLowerCase() : value;
 		return new ParserException(
-			`${message} ${TokenType[type]} ${value && JSON.stringify(value)}`,
+			`${message} ${TokenType[type]} ${v && JSON.stringify(v)}`,
 			start,
 			end,
 			quiet ? undefined : this.diagnostics,
@@ -480,22 +483,24 @@ export class Parser {
 	 * Throws an exception stating a given token.
 	 * @param token
 	 * @param message
+	 * @param lower Whether to convert the token value to lowercase.
 	 * @param severity
 	 */
-	private throwToken(token: Token, message: string, severity?: 'error' | 'warning'): void {
-		this.diagnostics.push(this.getException(token, message, severity));
+	private throwToken(token: Token, message: string, lower?: boolean, severity?: 'error' | 'warning'): void {
+		this.diagnostics.push(this.getException(token, message, lower, severity));
 	}
 
 	/**
 	 * Throws an exception stating the current token.
 	 * @param message
 	 * @param quiet Whether to suppress the error.
+	 * @param lower Whether to convert the token value to lowercase.
 	 * @param severity
 	 */
 	private throw(message: string, quiet: false): never;
-	private throw(message: string, quiet?: true, severity?: 'error' | 'warning'): void;
-	private throw(message: string, quiet = true, severity?: 'error' | 'warning'): void {
-		const error = this.getException(this.current, message, severity, quiet);
+	private throw(message: string, quiet?: true, lower?: boolean, severity?: 'error' | 'warning'): void;
+	private throw(message: string, quiet = true, lower?: boolean, severity?: 'error' | 'warning'): void {
+		const error = this.getException(this.current, message, lower, severity, quiet);
 		if (!quiet) {
 			throw error;
 		}
@@ -523,7 +528,7 @@ export class Parser {
 	 */
 	private throwInternal(token: Token): boolean {
 		const {functions, variables, deprecated, disabled} = this.dialect,
-			{value} = token;
+			value = token.value.toLowerCase();
 		if (
 			functions?.includes(value)
 			|| variables?.includes(value)
@@ -531,7 +536,7 @@ export class Parser {
 			|| disabled?.includes(value)
 			|| this.isKeyword(value)
 		) {
-			this.throwToken(token, 'Assign to internal');
+			this.throwToken(token, 'Assign to internal', true);
 			return true;
 		}
 		return false;
@@ -542,9 +547,9 @@ export class Parser {
 	 * @param token The token being assigned to.
 	 */
 	private throwUndefined(token = this.current): boolean {
-		const {value} = token;
+		const value = token.value.toLowerCase();
 		if (!this.locals.has(value)) {
-			this.throwToken(token, 'Undefined local', 'warning');
+			this.throwToken(token, 'Undefined local', true, 'warning');
 			return true;
 		}
 		this.usedLocals.add(value);

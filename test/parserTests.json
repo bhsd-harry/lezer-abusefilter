@@ -4543,6 +4543,55 @@
 		}
 	},
 	{
+		"code": "Test_var := 'edit';\nAction == test_Var\n",
+		"desc": "case",
+		"parsed": {
+			"name": "Script",
+			"children": [
+				{
+					"name": "AssignmentExpression",
+					"text": "Test_var := 'edit'",
+					"children": [
+						{
+							"name": "VarName",
+							"text": "Test_var"
+						},
+						{
+							"name": "Equals",
+							"text": ":="
+						},
+						{
+							"name": "String",
+							"text": "'edit'"
+						}
+					]
+				},
+				{
+					"name": ";",
+					"text": ";"
+				},
+				{
+					"name": "BinaryExpression",
+					"text": "Action == test_Var",
+					"children": [
+						{
+							"name": "GlobalVar",
+							"text": "Action"
+						},
+						{
+							"name": "CompareOp",
+							"text": "=="
+						},
+						{
+							"name": "VarName",
+							"text": "test_Var"
+						}
+					]
+				}
+			]
+		}
+	},
+	{
 		"code": "(string(1) === \"1\") &\n(int(\"1\") === 1) &\n(float(1) === 1.0) &\nbool(1) & !bool(0) &\nbool([]) === false &\nbool( [false] ) === true &\nbool( [1,2,3,4,5,6] ) === true &\nfloat([]) === 0.0 &\nfloat( [false] ) === 1.0 &\nfloat( [1,2,3,4,5,6] ) === 6.0 &\nint([]) === 0 &\nint( [false] ) === 1 &\nint( [1,2,3,4,5,6] ) === 6 &\ntrue + true === 2 &\nnull - null === 0 &\ntrue * false === 0 &\n163 % true === 0\n",
 		"desc": "cast",
 		"parsed": {
