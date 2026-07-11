@@ -77,6 +77,16 @@ export const abusefilterLanguage = LRLanguage.define({
 });
 
 /**
+ * Get core language support for AbuseFilter (without hover and signature help).
+ * An optional argument can be used to provide information about built-in keywords, variables and functions.
+ * @param dialect Site-specific information about built-in keywords, variables and functions
+ */
+export const abusefilterCore = (dialect?: Dialect): LanguageSupport => {
+	updateData(dialect);
+	return new LanguageSupport(abusefilterLanguage, abusefilterLanguage.data.of({autocomplete}));
+};
+
+/**
  * Get language support for AbuseFilter.
  * An optional argument can be used to provide information about built-in keywords, variables and functions.
  * @param dialect Site-specific information about built-in keywords, variables and functions
