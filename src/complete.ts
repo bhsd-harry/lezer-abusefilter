@@ -46,6 +46,7 @@ export const autocomplete = ({state, pos}: CompletionContext): CompletionResult 
 	const tree = syntaxTree(state),
 		inner = tree.resolveInner(pos, -1);
 	switch (inner.name) {
+		case 'if':
 		case 'Bool':
 		case 'null':
 		case 'Num':
@@ -64,6 +65,9 @@ export const autocomplete = ({state, pos}: CompletionContext): CompletionResult 
 				],
 				validFor: /^\w*$/u,
 			};
+		case 'then':
+		case 'else':
+		case 'end':
 		case 'Rel':
 		case '⚠': {
 			let controls: Completion[] = [];

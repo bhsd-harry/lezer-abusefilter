@@ -3,67 +3,73 @@ import {escHTML} from '@bhsd/browser';
 import {getSignatureHelpExtension} from '@bhsd/cm-util/cm';
 import {data, updateData} from './tokens.js';
 import {unique, defaultHoverInfo} from './util.js';
-import type {Extension} from '@codemirror/state';
+import type {Extension, EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 
-declare interface SignatureHelp {
+export interface SignatureHelp {
 	f: string;
 	signatures: string[][];
 	active: number;
 }
 
+export const updateHelp = (state: EditorState, cursor: number): SignatureHelp | undefined => {
+	const {hoverInfo} = data;
+	if (hoverInfo.size === 0) {
+		return undefined;
+	}
+	let node: SyntaxNode | null = syntaxTree(state).resolveInner(cursor, -1);
+	if (node.name === ')') {
+		return undefined;
+	}
+	while (node && node.name !== 'ArgList') {
+		node = node.parent;
+	}
+	if (!node) {
+		return undefined;
+	}
+	const previous = node.prevSibling;
+	if (previous?.name !== 'Func') {
+		return undefined;
+	}
+	const f = state.sliceDoc(previous.from, previous.to),
+		info = hoverInfo.get(f);
+	if (!info) {
+		return undefined;
+	}
+	const i = info.search(new RegExp(String.raw`\b${f}\(`, 'u')),
+		j = info.indexOf(')', i);
+	if (i === -1 || j === -1) {
+		return undefined;
+	}
+	let active = 0;
+	for (let child = node.firstChild; child && child.to <= cursor; child = child.nextSibling) {
+		if (child.name === ',') {
+			active++;
+		}
+	}
+	return {
+		f,
+		signatures: [info.slice(i + f.length + 1, j).split(',').map(s => s.trim())],
+		active,
+	};
+};
+
+export const renderHelp = ({f, signatures, active}: SignatureHelp): string => {
+	const signature = signatures[0]!,
+		l = signature.length;
+	return `${f}(${
+		signatures[0]!.map((s, i) => {
+			const str = escHTML(s);
+			return i === active || i === l - 1 && active > i && /^\.{2,}$/u.test(s) ? `<b>${str}</b>` : str;
+		}).join(', ')
+	})`;
+};
+
 const signatureFacet = unique(facet => getSignatureHelpExtension<SignatureHelp>({
 	className: facet,
+	render: renderHelp,
 	update(_, state, {cursor}) {
-		const {hoverInfo} = data;
-		if (hoverInfo.size === 0) {
-			return undefined;
-		}
-		let node: SyntaxNode | null = syntaxTree(state).resolveInner(cursor, -1);
-		if (node.name === ')') {
-			return undefined;
-		}
-		while (node && node.name !== 'ArgList') {
-			node = node.parent;
-		}
-		if (!node) {
-			return undefined;
-		}
-		const previous = node.prevSibling;
-		if (previous?.name !== 'Func') {
-			return undefined;
-		}
-		const f = state.sliceDoc(previous.from, previous.to),
-			info = hoverInfo.get(f);
-		if (!info) {
-			return undefined;
-		}
-		const i = info.search(new RegExp(String.raw`\b${f}\(`, 'u')),
-			j = info.indexOf(')', i);
-		if (i === -1 || j === -1) {
-			return undefined;
-		}
-		let active = 0;
-		for (let child = node.firstChild; child && child.to <= cursor; child = child.nextSibling) {
-			if (child.name === ',') {
-				active++;
-			}
-		}
-		return {
-			f,
-			signatures: [info.slice(i + f.length + 1, j).split(',').map(s => s.trim())],
-			active,
-		};
-	},
-	render({f, signatures, active}) {
-		const signature = signatures[0]!,
-			l = signature.length;
-		return `${f}(${
-			signatures[0]!.map((s, i) => {
-				const str = escHTML(s);
-				return i === active || i === l - 1 && active > i && /^\.{2,}$/u.test(s) ? `<b>${str}</b>` : str;
-			}).join(', ')
-		})`;
+		return updateHelp(state, cursor);
 	},
 }));
 
