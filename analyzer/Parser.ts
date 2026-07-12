@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-declarations-before-early-exit */
 import {ParserException} from './ParserException.js';
 import {TokenType} from './TokenType.js';
 import {valueKeywords, conditionKeywords} from './Tokenizer.js';

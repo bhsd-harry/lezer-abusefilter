@@ -28,7 +28,7 @@ describe('Analyzer Tests', () => {
 			} catch (e) {
 				const {from, to, message, warnings} = e as ParserException;
 				if (
-					!(from === index || /^Unclosed (?:comment|string literal)$/u.test(message) && to === index)
+					!(from === index || to === index && /^Unclosed (?:comment|string literal)$/u.test(message))
 					|| warnings?.length
 				) {
 					(e as Error).cause = {message: `\n${incomplete}`};

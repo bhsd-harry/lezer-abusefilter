@@ -37,7 +37,7 @@
 		"lint:ts": "tsc --noEmit && tsc --project analyzer/tsconfig.json && tsc --project test/tsconfig.json --noEmit && eslint --cache . && eslint --no-config-lookup -c eslint.dist.js --no-inline-config dist/*.js",
 		"lint:md": "markdownlint-cli2 '**/*.md'",
 		"lint": "npm run lint:ts && npm run lint:md",
-		"test": "npx testUtil test/dist/test.js test/dist/*.test.js",
+		"test": "testUtil test/dist/test.js test/dist/*.test.js",
 		"test:real": "node test/dist/real.js"
 	},
 	"peerDependencies": {
@@ -59,8 +59,8 @@
 		"@bhsd/cm-util": "^2.3.0"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^3.1.0",
-		"@bhsd/nodejs": "^1.2.0",
+		"@bhsd/code-standard": "^3.2.0",
+		"@bhsd/nodejs": "^1.2.1",
 		"@bhsd/test-util": "^3.1.0",
 		"@codemirror/autocomplete": "^6.20.3",
 		"@codemirror/language": "^6.12.4",
@@ -69,8 +69,8 @@
 		"@codemirror/view": "^6.43.6",
 		"@lezer/generator": "^1.8.0",
 		"esbuild": "^0.28.1",
-		"eslint": "^10.6.0",
-		"markdownlint-cli2": "^0.23.0",
+		"eslint": "^10.7.0",
+		"markdownlint-cli2": "^0.23.1",
 		"typescript": "^6.0.3"
 	}
 }

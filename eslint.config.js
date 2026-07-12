@@ -26,6 +26,7 @@ export default [
 		files: ['test/**/*.ts'],
 		rules: {
 			'es-x/no-regexp-lookbehind-assertions': 0,
+			'unicorn/no-top-level-side-effects': 0,
 		},
 	},
 ];

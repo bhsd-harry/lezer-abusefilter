@@ -156,7 +156,7 @@ export class Tokenizer {
 			// Checking for being NaN is needed, otherwise token `a` will be interpreted as
 			// `0x0a` and not as an identifier
 			if (number.includes('.')) {
-				const numberValue = parseFloat(number);
+				const numberValue = Number(number);
 				if (!Number.isNaN(numberValue)) {
 					return new Token(TokenType.FloatLiteral, String(numberValue), offset, tokenLength);
 				}
@@ -248,10 +248,7 @@ export class Tokenizer {
 				// chunkEnd is the exclusive end of the chunk.
 				const nextBackslash = input.indexOf('\\', offset);
 				const nextQuote = input.indexOf(quoteChar, offset);
-				let chunkEnd = l;
-				if (nextBackslash !== -1) {
-					chunkEnd = nextBackslash;
-				}
+				let chunkEnd = nextBackslash === -1 ? l : nextBackslash;
 				if (nextQuote !== -1) {
 					chunkEnd = Math.min(chunkEnd, nextQuote);
 				}
