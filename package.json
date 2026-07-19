@@ -29,12 +29,12 @@
 	"scripts": {
 		"ls": "npm i --package-lock-only && npm ls --package-lock-only --all --omit=dev",
 		"prepublishOnly": "npm run build",
-		"build:analyzer": "esbuild analyzer/index.ts --charset=utf8 --target=es2017 --bundle --format=esm --outfile=analyzer/analyzer.js && gsed -i '/^\\/\\/ /d' analyzer/analyzer.js && cp analyzer/analyzer.js build/",
+		"build:analyzer": "esbuild analyzer/index.ts --charset=utf8 --target=es2024 --bundle --format=esm --outfile=analyzer/analyzer.js && gsed -i '/^\\/\\/ /d' analyzer/analyzer.js && cp analyzer/analyzer.js build/ && eslint --no-config-lookup -c eslint.dist.js --no-inline-config analyzer/analyzer.js",
 		"build:parser": "lezer-generator src/abusefilter.grammar -o src/parser.js",
-		"build:core": "tsc && cp src/parser.*js dist/",
+		"build:core": "tsc && cp src/parser.*js dist/ && eslint --no-config-lookup -c eslint.es8.js --no-inline-config dist/*.js",
 		"build:test": "rm -rf test/dist/; tsc --project test/tsconfig.json && npm test",
 		"build": "npm run build:parser && npm run build:analyzer && npm run build:core",
-		"lint:ts": "tsc --noEmit && tsc --project analyzer/tsconfig.json && tsc --project test/tsconfig.json --noEmit && eslint --cache . && eslint --no-config-lookup -c eslint.dist.js --no-inline-config dist/*.js",
+		"lint:ts": "tsc --noEmit && tsc --project analyzer/tsconfig.json && tsc --project test/tsconfig.json --noEmit && eslint --cache .",
 		"lint:md": "markdownlint-cli2 '**/*.md'",
 		"lint": "npm run lint:ts && npm run lint:md",
 		"test": "testUtil test/dist/test.js test/dist/*.test.js",
@@ -55,11 +55,10 @@
 		}
 	},
 	"dependencies": {
-		"@bhsd/browser": "^1.1.0",
-		"@bhsd/cm-util": "^2.3.0"
+		"@bhsd/cm-util": "^2.4.0"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^3.2.0",
+		"@bhsd/code-standard": "^3.3.0",
 		"@bhsd/nodejs": "^1.2.1",
 		"@bhsd/test-util": "^3.1.0",
 		"@codemirror/autocomplete": "^6.20.3",

@@ -1,6 +1,5 @@
 import {syntaxTree} from '@codemirror/language';
-import {escHTML} from '@bhsd/browser';
-import {getSignatureHelpExtension} from '@bhsd/cm-util/cm';
+import {getSignatureHelpExtension, escHTML} from '@bhsd/cm-util/cm';
 import {data, updateData} from './tokens.js';
 import {unique, defaultHoverInfo} from './util.js';
 import type {Extension, EditorState} from '@codemirror/state';
