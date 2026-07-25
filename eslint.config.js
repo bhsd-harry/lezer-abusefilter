@@ -1,4 +1,4 @@
-import config, {browser, browserES8} from '@bhsd/code-standard';
+import config, {browser, browserES10} from '@bhsd/code-standard';
 
 export default [
 	{
@@ -8,7 +8,7 @@ export default [
 	browser,
 	{
 		files: ['src/*.ts'],
-		rules: browserES8.rules,
+		rules: browserES10.rules,
 	},
 	{
 		files: ['analyzer/**/*.ts'],
@@ -25,7 +25,6 @@ export default [
 	{
 		files: ['test/**/*.ts'],
 		rules: {
-			'es-x/no-regexp-lookbehind-assertions': 0,
 			'unicorn/no-top-level-side-effects': 0,
 		},
 	},
