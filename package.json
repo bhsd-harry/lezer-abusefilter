@@ -70,6 +70,6 @@
 		"esbuild": "^0.28.1",
 		"eslint": "^10.7.0",
 		"markdownlint-cli2": "^0.23.1",
-		"typescript": "^6.0.3"
+		"typescript": "^7.0.2"
 	}
 }
