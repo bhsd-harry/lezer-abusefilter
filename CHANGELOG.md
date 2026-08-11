@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.5.1
+
+*2026-08-13*
+
+**Changed**
+
+- The package is now compatible with ECMAScript 2019
+
 ## 0.5.0
 
 *2026-07-12*
