@@ -4,8 +4,7 @@ import type {LintSource, Diagnostic} from '@codemirror/lint';
 import type {ParserException} from '../analyzer/analyzer';
 
 /**
- * Lint source derived from
- * {@link https://meta.wikimedia.org/wiki/User:Msz2001/AbuseFilter_analyzer AbuseFilter analyzer}.
+ * Lint source derived from [AbuseFilter analyzer](https://meta.wikimedia.org/wiki/User:Msz2001/AbuseFilter_analyzer).
  * @ignore
  */
 export const analyzer: LintSource = ({state: {doc}}) => {
