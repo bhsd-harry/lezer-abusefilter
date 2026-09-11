@@ -174,6 +174,7 @@ export class Tokenizer {
 		if (identifierMatch) {
 			const [identifier] = identifierMatch;
 			const isKeyword = this.keywords.has(identifier);
+			// eslint-disable-next-line unicorn/prefer-minimal-ternary
 			const tokenType = isKeyword ? TokenType.Keyword : TokenType.Identifier;
 			return new Token(tokenType, identifier, offset);
 		}

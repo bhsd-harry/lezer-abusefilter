@@ -6,7 +6,7 @@ import type {SyntaxNode} from '@lezer/common';
 export interface ObjNode {
 	name: string;
 	text?: string;
-	children?: ObjNode[];
+	children?: this[];
 }
 
 updateData(dialect);
