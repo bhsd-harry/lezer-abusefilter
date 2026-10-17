@@ -27,14 +27,14 @@
 		"url": "git+https://github.com/bhsd-harry/lezer-abusefilter.git"
 	},
 	"scripts": {
-		"ls": "npm i --package-lock-only && npm ls --package-lock-only --all --omit=dev",
+		"ls": "npm i --package-lock-only && npm ls --package-lock-only -a --omit=dev",
 		"prepublishOnly": "npm run build",
 		"build:analyzer": "esbuild analyzer/index.ts --charset=utf8 --target=es2024 --bundle --format=esm --outfile=analyzer/analyzer.js && gsed -i '/^\\/\\/ /d' analyzer/analyzer.js && cp analyzer/analyzer.js build/ && eslint --no-config-lookup -c eslint.dist.js --no-inline-config analyzer/analyzer.js",
 		"build:parser": "lezer-generator src/abusefilter.grammar -o src/parser.js",
 		"build:core": "tsc && cp src/parser.*js dist/ && eslint --no-config-lookup -c eslint.dist.js --no-inline-config dist/*.js",
 		"build": "npm run build:parser && npm run build:analyzer && npm run build:core",
 		"lint:ts": "tsc --noEmit && tsc -p analyzer/tsconfig.json && tsc -p test/tsconfig.json --noEmit && eslint --cache .",
-		"lint:md": "markdownlint-cli2 '**/*.md'",
+		"lint:md": "myMarkdownlint",
 		"lint": "npm run lint:ts && npm run lint:md",
 		"test": "rm -rf test/dist/; tsc -p test/tsconfig.json && testUtil test/dist/test.js test/dist/*.test.js",
 		"test:real": "node test/dist/real.js"
@@ -54,18 +54,17 @@
 		"@bhsd/cm-util": "^2.4.1"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^4.3.0",
+		"@bhsd/code-standard": "^5.0.0",
 		"@bhsd/nodejs": "^1.2.1",
 		"@bhsd/test-util": "^3.2.1",
 		"@codemirror/autocomplete": "^6.20.3",
-		"@codemirror/language": "^6.12.4",
+		"@codemirror/language": "^6.13.1",
 		"@codemirror/lint": "^6.9.7",
 		"@codemirror/state": "^6.7.6",
-		"@codemirror/view": "^6.43.13",
+		"@codemirror/view": "^6.43.14",
 		"@lezer/generator": "^1.8.1",
 		"esbuild": "^0.28.2",
-		"eslint": "^10.12.0",
-		"markdownlint-cli2": "^0.23.3",
+		"eslint": "^10.13.0",
 		"typescript": "^6.0.3"
 	}
 }
