@@ -4,5 +4,4 @@ dist/
 /src/parser.*js
 /analyzer/*.js
 /.vscode/
-/*.map
 /package-lock.json
