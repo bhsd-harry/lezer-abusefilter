@@ -1,6 +1,6 @@
 import {syntaxTree} from '@codemirror/language';
 import {data, startKeywords} from './tokens.js';
-import type {Text} from '@codemirror/state'; // eslint-disable-line @typescript-eslint/no-shadow
+import type {Text} from '@codemirror/state';
 import type {CompletionContext, CompletionResult, Completion} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
 

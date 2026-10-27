@@ -1,6 +1,6 @@
-import config, {browser, browserES10} from '@bhsd/code-standard';
+import config, {browser, browserES10, getOxlintConfig} from '@bhsd/code-standard';
 
-export default [
+const oxlintConfig = getOxlintConfig([
 	{
 		ignores: ['**/*.js'],
 	},
@@ -28,4 +28,6 @@ export default [
 			'unicorn/no-top-level-side-effects': 0,
 		},
 	},
-];
+]);
+
+export default oxlintConfig;

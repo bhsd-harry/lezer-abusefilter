@@ -13,7 +13,7 @@ updateData(dialect);
 
 const parser = abusefilterLanguage.parser.configure({strict: true});
 
-// eslint-disable-next-line @typescript-eslint/no-shadow
+// oxlint-disable-next-line @typescript-eslint/no-shadow
 const toObj = (code: string, {name, from, to, firstChild}: SyntaxNode): ObjNode => {
 	const node: ObjNode = {
 		name,

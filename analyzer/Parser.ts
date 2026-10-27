@@ -428,7 +428,7 @@ export class Parser {
 					break;
 				}
 				this.throw('Unrecognized', false);
-				// no fall through
+				break;
 			case TokenType.SquareBracket:
 				if (value === '[') {
 					while (true) {
@@ -446,7 +446,7 @@ export class Parser {
 					}
 					break;
 				}
-				// Fallthrough expected
+				// fall through
 			default:
 				this.throwUnexpectedToken();
 		}

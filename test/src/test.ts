@@ -31,6 +31,6 @@ describe('Parser Tests', () => {
 		});
 	}
 	after(() => {
-		fs.writeFileSync(json, `${JSON.stringify(results, null, '\t')}\n`);
+		fs.writeFileSync(json, JSON.stringify(results, null, '\t'));
 	});
 });
