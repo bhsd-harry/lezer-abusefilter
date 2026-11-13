@@ -303,7 +303,7 @@ export class Parser {
 	/** Handles keyword operators. */
 	private doLevelKeywordOperators(): Token | null {
 		const leftOperand = this.doLevelUnarys();
-		if (this.is(TokenType.Keyword, this.dialect.keywords)) {
+		if (this.is(TokenType.Keyword, this.dialect.keywords ?? [])) {
 			this.move();
 			this.doLevelUnarys();
 			return null;
@@ -381,7 +381,6 @@ export class Parser {
 					if (setFlag) {
 						setFlag = false;
 						if (thisArg?.type === TokenType.StringLiteral) {
-							thisArg.type = TokenType.Identifier;
 							this.throwInternal(thisArg);
 							this.locals.set(thisArg.value.toLowerCase(), thisArg);
 						} else if (thisArg) {
@@ -415,7 +414,7 @@ export class Parser {
 					this.throw('Use of deprecated', true, true, 'warning');
 				} else if (this.dialect.functions?.includes(value) || this.isKeyword(value)) {
 					this.throw('Incorrect use of internal');
-				} else if (this.dialect.variables?.includes(lc) === false) {
+				} else if (!this.dialect.variables?.includes(lc)) {
 					this.throwUndefined();
 				}
 				break;

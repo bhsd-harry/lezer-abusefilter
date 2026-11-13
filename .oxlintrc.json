@@ -598,6 +598,7 @@
 				"src/*.ts"
 			],
 			"rules": {
+				"prefer-object-has-own": "off",
 				"unicorn/prefer-at": "off",
 				"unicorn/prefer-bigint-literals": "off",
 				"unicorn/prefer-object-from-entries": "off",
@@ -619,6 +620,7 @@
 		}
 	],
 	"options": {
+		"denyWarnings": true,
 		"reportUnusedDisableDirectives": "warn",
 		"respectEslintDisableDirectives": false
 	}

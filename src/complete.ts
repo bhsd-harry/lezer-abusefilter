@@ -23,16 +23,16 @@ const getScope = (doc: Text, scope: SyntaxNode): Set<string> => {
 		return cache.get(scope)!;
 	}
 	const completions = new Set<string>();
-	scope.cursor().iterate(node => { // eslint-disable-line consistent-return
-		if (node.name === 'AssignmentExpression') {
-			const variable = node.node.getChild('VarName');
+	scope.cursor().iterate(({node, name: n, from, to}) => { // eslint-disable-line consistent-return
+		if (n === 'AssignmentExpression') {
+			const variable = node.getChild('VarName');
 			if (variable) {
 				completions.add(doc.sliceString(variable.from, variable.to));
 			}
 			return false;
-		} else if (node.to - node.from > 8192) {
+		} else if (node !== scope && to - from > 8192) {
 			// Allow caching for bigger internal nodes
-			for (const variable of getScope(doc, node.node)) {
+			for (const variable of getScope(doc, node)) {
 				completions.add(variable);
 			}
 			return false;

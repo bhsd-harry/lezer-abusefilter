@@ -69,7 +69,7 @@ export const abusefilterLanguage = LRLanguage.define({
 			block: {open: '/*', close: '*/'},
 		},
 		closeBrackets: {
-			brackts: ['(', '[', "'", '"'],
+			brackets: ['(', '[', "'", '"'],
 			before: ')];',
 		},
 		indentOnInput: /^\s*(?:[)\]]|then|else|end)$/u,

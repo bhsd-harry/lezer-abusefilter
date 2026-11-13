@@ -17,7 +17,7 @@ const hoverTokens = new Set(['VarName', 'GlobalVar', 'Func', 'Rel']),
 		if (!hoverTokens.has(n)) {
 			return null;
 		}
-		const info = hoverInfo.get(state.sliceDoc(from, to));
+		const info = hoverInfo.get(state.sliceDoc(from, to).toLowerCase());
 		return info
 			? {
 				pos,

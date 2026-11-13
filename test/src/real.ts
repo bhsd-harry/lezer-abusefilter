@@ -1,7 +1,6 @@
-import {execSync} from 'child_process';
 import {setTimeout as sleep} from 'timers/promises';
 import {apis} from '@bhsd/test-util';
-import {refreshStdout} from '@bhsd/nodejs';
+import {refreshStdout, getEmail} from '@bhsd/nodejs';
 import parse from './parser.js';
 import analyze from '../../analyzer/analyzer.js';
 import {data, updateData} from '../../dist/tokens.js';
@@ -26,7 +25,7 @@ const failures = new Map<string, number>();
 
 const notDeprecation = (e: Error): boolean => !e.message.startsWith('Use of deprecated ');
 
-const getFilters = async (url: string): Promise<Required<AbuseFilter>[]> => {
+const getFilters = async (url: string, email: string): Promise<Required<AbuseFilter>[]> => {
 	const qs = {
 			action: 'query',
 			format: 'json',
@@ -41,20 +40,19 @@ const getFilters = async (url: string): Promise<Required<AbuseFilter>[]> => {
 			headers: {
 				'User-Agent': `@bhsd/lezer-abusefilter/${
 					packageJson.version
-				} (https://www.npmjs.com/package/@bhsd/lezer-abusefilter; ${
-					execSync('git config user.email', {encoding: 'utf8'}).trim()
-				}) Node.js/${process.version}`,
+				} (https://www.npmjs.com/package/@bhsd/lezer-abusefilter; ${email}) Node.js/${process.version}`,
 			},
 		})).json();
 	return query.abusefilters.filter((filter): filter is Required<AbuseFilter> => 'pattern' in filter);
 };
 
 (async () => {
+	const email = getEmail();
 	for (const [site, url] of apis) {
 		console.log(`开始检查${site}：`);
 		try {
 			let failed = 0;
-			for (const {id, description, pattern} of await getFilters(`${url}/api.php`)) {
+			for (const {id, description, pattern} of await getFilters(`${url}/api.php`, email)) {
 				await sleep(1);
 				refreshStdout(`${id} ${description}`);
 				try {

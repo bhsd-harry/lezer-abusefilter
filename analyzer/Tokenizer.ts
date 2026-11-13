@@ -195,6 +195,7 @@ export class Tokenizer {
 		// Stores the parsed string content, i.e. `\n` will be stored as a newline character etc.
 		let stringContent = '';
 		let offset = startOffset + 1;
+		let nextQuote = input.indexOf(quoteChar, offset);
 		while (offset < l) {
 			const char = input[offset]!;
 			if (char === quoteChar) {
@@ -248,8 +249,10 @@ export class Tokenizer {
 				// Copy the whole chunk without escape characters to the output variable.
 				// chunkEnd is the exclusive end of the chunk.
 				const nextBackslash = input.indexOf('\\', offset);
-				const nextQuote = input.indexOf(quoteChar, offset);
 				let chunkEnd = nextBackslash === -1 ? l : nextBackslash;
+				if (nextQuote < offset) {
+					nextQuote = input.indexOf(quoteChar, offset);
+				}
 				if (nextQuote !== -1) {
 					chunkEnd = Math.min(chunkEnd, nextQuote);
 				}
